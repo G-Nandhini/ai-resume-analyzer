@@ -24,6 +24,7 @@ urlpatterns = [
     path('dashboard/', dashboard_preview, name='dashboard'),
     path('', include('apps.accounts.urls')),
     path('', include('apps.resumes.urls')),
+    path('', include('apps.jobs.urls')),
     path('admin/', admin.site.urls),
 ]
 
