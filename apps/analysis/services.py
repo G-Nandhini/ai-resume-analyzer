@@ -1,6 +1,6 @@
 import re
 
-from .models import JDMatchResult, ResumeAnalysis
+from .models import InterviewQuestion, JDMatchResult, ResumeAnalysis
 
 
 RESUME_SECTIONS = ('skills', 'experience', 'education', 'projects')
@@ -102,6 +102,34 @@ def analyze_resume_against_jd(resume, job_description):
     )
 
 
+def generate_basic_interview_questions(match_result):
+    question_specs = (
+        (InterviewQuestion.HR, _build_hr_questions(match_result)),
+        (InterviewQuestion.TECHNICAL, _build_technical_questions(match_result)),
+        (
+            InterviewQuestion.PROJECT_BASED,
+            _build_project_based_questions(match_result),
+        ),
+    )
+
+    for question_type, questions in question_specs:
+        existing_count = match_result.interview_questions.filter(
+            question_type=question_type,
+        ).count()
+        questions_to_create = questions[existing_count:5]
+
+        InterviewQuestion.objects.bulk_create([
+            InterviewQuestion(
+                match_result=match_result,
+                question_type=question_type,
+                question=question,
+            )
+            for question in questions_to_create
+        ])
+
+    return match_result.interview_questions.all()
+
+
 def _contains_skill(cleaned_resume_text, skill):
     cleaned_skill = clean_text(skill)
 
@@ -148,3 +176,59 @@ def _has_email(text):
 
 def _has_phone(text):
     return re.search(r'(\+?\d[\d\s().-]{7,}\d)', text or '') is not None
+
+
+def _build_hr_questions(match_result):
+    job_title = match_result.job_description.job_title
+    company_name = match_result.job_description.company_name or 'our company'
+
+    return [
+        f'Tell me about yourself and why you are interested in the {job_title} role.',
+        f'What attracted you to {company_name} and this opportunity?',
+        'Describe a time you handled a challenging situation at work.',
+        'How do you prioritize your work when multiple deadlines compete?',
+        f'What are your short-term career goals for the next role as a {job_title}?',
+    ]
+
+
+def _build_technical_questions(match_result):
+    matched_skills = match_result.matched_skills or []
+    missing_skills = match_result.missing_skills or []
+    primary_matched_skill = (
+        matched_skills[0] if matched_skills else 'your strongest technical skill'
+    )
+    secondary_matched_skill = (
+        matched_skills[1] if len(matched_skills) > 1 else primary_matched_skill
+    )
+    primary_missing_skill = missing_skills[0] if missing_skills else 'a new technology'
+    secondary_missing_skill = (
+        missing_skills[1] if len(missing_skills) > 1 else primary_missing_skill
+    )
+    all_skills = matched_skills + missing_skills
+    skill_summary = ', '.join(all_skills[:4]) if all_skills else 'the required skills'
+
+    return [
+        f'How have you used {primary_matched_skill} in a real project?',
+        f'Explain an important concept or best practice in {secondary_matched_skill}.',
+        f'How would you approach learning or improving {primary_missing_skill} for this role?',
+        (
+            f'What would you do if a task required {secondary_missing_skill} '
+            'but you had limited experience with it?'
+        ),
+        f'How would you design or troubleshoot a solution using {skill_summary}?',
+    ]
+
+
+def _build_project_based_questions(match_result):
+    job_title = match_result.job_description.job_title
+    matched_skills = match_result.matched_skills or []
+    primary_skill = matched_skills[0] if matched_skills else 'the relevant skills'
+    secondary_skill = matched_skills[1] if len(matched_skills) > 1 else primary_skill
+
+    return [
+        f'Walk me through a project that best demonstrates your fit for the {job_title} role.',
+        f'Describe a project where you used {primary_skill}. What was your specific contribution?',
+        'Tell me about a project challenge you faced and how you solved it.',
+        f'How did you measure success or impact in a project involving {secondary_skill}?',
+        'If you could improve one past project, what would you change and why?',
+    ]

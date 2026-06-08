@@ -53,3 +53,34 @@ class JDMatchResult(models.Model):
 
     def __str__(self):
         return f'{self.resume} match for {self.job_description}'
+
+
+class InterviewQuestion(models.Model):
+    HR = 'HR'
+    TECHNICAL = 'Technical'
+    PROJECT_BASED = 'Project Based'
+
+    QUESTION_TYPE_CHOICES = (
+        (HR, 'HR'),
+        (TECHNICAL, 'Technical'),
+        (PROJECT_BASED, 'Project Based'),
+    )
+
+    match_result = models.ForeignKey(
+        JDMatchResult,
+        on_delete=models.CASCADE,
+        related_name='interview_questions',
+    )
+    question_type = models.CharField(
+        max_length=50,
+        choices=QUESTION_TYPE_CHOICES,
+    )
+    question = models.TextField()
+    answer = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['question_type', 'created_at']
+
+    def __str__(self):
+        return f'{self.question_type} question for {self.match_result}'

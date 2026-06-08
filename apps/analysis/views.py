@@ -7,8 +7,8 @@ from apps.jobs.models import JobDescription
 from apps.resumes.models import Resume
 
 from .forms import AnalyzeForm
-from .models import JDMatchResult
-from .services import analyze_resume_against_jd
+from .models import InterviewQuestion, JDMatchResult
+from .services import analyze_resume_against_jd, generate_basic_interview_questions
 
 
 @login_required
@@ -68,3 +68,46 @@ def analysis_result(request, match_result_id):
     )
 
     return render(request, 'analysis/analysis_result.html', {'match_result': match_result})
+
+
+@login_required
+def latest_interview_questions(request):
+    match_result = JDMatchResult.objects.filter(
+        resume__user=request.user,
+        job_description__user=request.user,
+    ).first()
+
+    if not match_result:
+        messages.info(
+            request,
+            'Analyze a resume against a job description to generate interview questions.',
+        )
+        return redirect('analyze_form')
+
+    return redirect('interview_questions', match_result_id=match_result.id)
+
+
+@login_required
+def interview_questions(request, match_result_id):
+    match_result = get_object_or_404(
+        JDMatchResult.objects.select_related(
+            'resume',
+            'job_description',
+        ),
+        id=match_result_id,
+        resume__user=request.user,
+        job_description__user=request.user,
+    )
+    questions = generate_basic_interview_questions(match_result)
+
+    context = {
+        'match_result': match_result,
+        'hr_questions': questions.filter(question_type=InterviewQuestion.HR),
+        'technical_questions': questions.filter(
+            question_type=InterviewQuestion.TECHNICAL,
+        ),
+        'project_based_questions': questions.filter(
+            question_type=InterviewQuestion.PROJECT_BASED,
+        ),
+    }
+    return render(request, 'analysis/interview_questions.html', context)
