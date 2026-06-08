@@ -1,0 +1,132 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Analysis Result | ResumeIQ{% endblock %}
+
+{% block page_title %}Analysis Result{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-xl-row justify-content-between gap-3 align-items-xl-center mb-4">
+    <div>
+        <h3 class="section-title mb-1">{{ match_result.resume.title }}</h3>
+        <p class="text-muted-soft mb-0">
+            {{ match_result.job_description.job_title }}
+            {% if match_result.job_description.company_name %}
+                at {{ match_result.job_description.company_name }}
+            {% endif %}
+        </p>
+    </div>
+    <div class="text-xl-end">
+        <span class="d-block text-muted-soft small">Analysis Date</span>
+        <strong>{{ match_result.created_at|date:"M d, Y, g:i A" }}</strong>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-6">
+        <section class="app-card h-100">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <div>
+                    <p class="text-muted-soft mb-1">Resume Score</p>
+                    <h4 class="display-6 fw-bold mb-0">{{ match_result.resume_analysis.resume_score|floatformat:1 }}%</h4>
+                </div>
+                <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                    <i class="bi bi-file-earmark-check fs-4"></i>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-12 col-md-6">
+        <section class="app-card h-100">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <div>
+                    <p class="text-muted-soft mb-1">JD Match Score</p>
+                    <h4 class="display-6 fw-bold mb-0">{{ match_result.match_score|floatformat:1 }}%</h4>
+                </div>
+                <div class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                    <i class="bi bi-stars fs-4"></i>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-7">
+        <section class="app-card h-100">
+            <h4 class="section-title">Matched Skills</h4>
+            <div class="d-flex flex-wrap gap-2">
+                {% for skill in match_result.matched_skills %}
+                    <span class="badge rounded-pill text-bg-success">{{ skill }}</span>
+                {% empty %}
+                    <p class="text-muted-soft mb-0">No matched skills found.</p>
+                {% endfor %}
+            </div>
+
+            <hr class="my-4">
+
+            <h4 class="section-title">Missing Skills</h4>
+            <div class="d-flex flex-wrap gap-2">
+                {% for skill in match_result.missing_skills %}
+                    <span class="badge rounded-pill text-bg-danger">{{ skill }}</span>
+                {% empty %}
+                    <p class="text-muted-soft mb-0">No missing skills found.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <section class="app-card h-100">
+            <h4 class="section-title">Missing Sections</h4>
+            <ul class="list-group list-group-flush">
+                {% for section in match_result.resume_analysis.missing_sections %}
+                    <li class="list-group-item px-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-circle text-danger"></i>
+                        <span class="text-capitalize">{{ section }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item px-0 text-muted-soft">All basic sections were found.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-7">
+        <section class="app-card h-100">
+            <h4 class="section-title">Suggestions</h4>
+            <ul class="list-group list-group-flush">
+                {% for suggestion in match_result.resume_analysis.suggestions %}
+                    <li class="list-group-item px-0 d-flex gap-2">
+                        <i class="bi bi-lightbulb text-warning"></i>
+                        <span>{{ suggestion }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item px-0 text-muted-soft">No suggestions available.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <section class="app-card h-100">
+            <h4 class="section-title">Reason</h4>
+            <p class="mb-0">{{ match_result.reason|default:"No reason provided." }}</p>
+        </section>
+    </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mt-4">
+    <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">
+        <i class="bi bi-arrow-left"></i>
+        Back to Dashboard
+    </a>
+    <a class="btn btn-primary disabled" href="#" aria-disabled="true">
+        <i class="bi bi-file-earmark-text"></i>
+        View Reports
+    </a>
+    <a class="btn btn-secondary disabled" href="#" aria-disabled="true">
+        <i class="bi bi-chat-square-text"></i>
+        Generate Interview Questions
+    </a>
+</div>
+{% endblock %}
