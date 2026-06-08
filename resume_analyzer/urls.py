@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
-from apps.accounts.views import dashboard_preview
+from apps.analysis.views import dashboard
 
 urlpatterns = [
-    path('', dashboard_preview, name='home'),
-    path('dashboard/', dashboard_preview, name='dashboard'),
+    path('', dashboard, name='home'),
+    path('dashboard/', dashboard, name='dashboard'),
     path('', include('apps.accounts.urls')),
     path('', include('apps.resumes.urls')),
     path('', include('apps.jobs.urls')),
