@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -5,6 +7,7 @@ from django.urls import reverse
 from apps.jobs.models import JobDescription
 from apps.resumes.models import Resume
 
+from .ai_service import AIServiceNotConfigured
 from .models import InterviewQuestion, JDMatchResult, ResumeAnalysis
 from .services import (
     analyze_resume_against_jd,
@@ -250,6 +253,48 @@ class AnalyzeViewTests(TestCase):
         self.assertTemplateUsed(response, 'analysis/analysis_result.html')
         self.assertContains(response, self.resume.title)
         self.assertContains(response, self.job_description.job_title)
+
+    def test_generate_ai_insights_without_configuration_shows_message(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.user)
+
+        with patch(
+            'apps.analysis.views.generate_ai_resume_insights',
+            side_effect=AIServiceNotConfigured,
+        ):
+            response = self.client.post(
+                reverse('generate_ai_insights', kwargs={'match_result_id': result.id}),
+                follow=True,
+            )
+
+        result.resume_analysis.refresh_from_db()
+        self.assertEqual(result.resume_analysis.ai_insights, {})
+        self.assertContains(response, 'AI is not configured yet.')
+
+    def test_generate_ai_insights_saves_and_displays_ai_data(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.user)
+        ai_insights = {
+            'summary': 'Strong backend fit.',
+            'strengths': ['Python experience'],
+            'weaknesses': ['Limited Django evidence'],
+            'suggestions': ['Add Django project details'],
+            'interview_questions': ['How have you built Django APIs?'],
+        }
+
+        with patch(
+            'apps.analysis.views.generate_ai_resume_insights',
+            return_value=ai_insights,
+        ):
+            response = self.client.post(
+                reverse('generate_ai_insights', kwargs={'match_result_id': result.id}),
+                follow=True,
+            )
+
+        result.resume_analysis.refresh_from_db()
+        self.assertEqual(result.resume_analysis.ai_insights, ai_insights)
+        self.assertContains(response, 'Strong backend fit.')
+        self.assertContains(response, 'Python experience')
 
     def test_analysis_result_does_not_show_another_users_result(self):
         result = analyze_resume_against_jd(self.resume, self.job_description)

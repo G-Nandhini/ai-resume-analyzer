@@ -123,5 +123,60 @@
             <p class="mb-0">{{ match_result.reason|default:"No reason provided." }}</p>
         </section>
     </div>
+
+    {% if match_result.resume_analysis.ai_insights %}
+        <div class="col-12">
+            <section class="app-card">
+                <h4 class="section-title">AI Insights</h4>
+                {% with insights=match_result.resume_analysis.ai_insights %}
+                    {% if insights.summary %}
+                        <p>{{ insights.summary }}</p>
+                    {% endif %}
+                    <div class="row g-4">
+                        <div class="col-12 col-lg-6">
+                            <h5 class="fw-semibold">Strengths</h5>
+                            <ul class="list-group list-group-flush">
+                                {% for strength in insights.strengths %}
+                                    <li class="list-group-item px-0">{{ strength }}</li>
+                                {% empty %}
+                                    <li class="list-group-item px-0 text-muted-soft">No strengths available.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <h5 class="fw-semibold">Weaknesses</h5>
+                            <ul class="list-group list-group-flush">
+                                {% for weakness in insights.weaknesses %}
+                                    <li class="list-group-item px-0">{{ weakness }}</li>
+                                {% empty %}
+                                    <li class="list-group-item px-0 text-muted-soft">No weaknesses available.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <h5 class="fw-semibold">Suggestions</h5>
+                            <ul class="list-group list-group-flush">
+                                {% for suggestion in insights.suggestions %}
+                                    <li class="list-group-item px-0">{{ suggestion }}</li>
+                                {% empty %}
+                                    <li class="list-group-item px-0 text-muted-soft">No AI suggestions available.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <h5 class="fw-semibold">Interview Questions</h5>
+                            <ul class="list-group list-group-flush">
+                                {% for question in insights.interview_questions %}
+                                    <li class="list-group-item px-0">{{ question }}</li>
+                                {% empty %}
+                                    <li class="list-group-item px-0 text-muted-soft">No AI interview questions available.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endwith %}
+            </section>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

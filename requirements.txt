@@ -4,3 +4,4 @@ python-dotenv
 pymupdf
 python-docx
 weasyprint
+openai
