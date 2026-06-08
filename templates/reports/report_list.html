@@ -1,0 +1,76 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Reports | ResumeIQ{% endblock %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block content %}
+<section class="app-card">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h3 class="section-title mb-1">Match Reports</h3>
+            <p class="text-muted-soft mb-0">Review completed resume-to-job match results.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'analyze_form' %}">
+            <i class="bi bi-stars me-2"></i>New Analysis
+        </a>
+    </div>
+
+    {% if match_results %}
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Resume</th>
+                        <th>Job Title</th>
+                        <th>Match Score</th>
+                        <th>Resume Score</th>
+                        <th>Created Date</th>
+                        <th class="text-end">View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in match_results %}
+                        <tr>
+                            <td>{{ result.resume.title }}</td>
+                            <td>
+                                {{ result.job_description.job_title }}
+                                {% if result.job_description.company_name %}
+                                    <span class="d-block small text-muted-soft">{{ result.job_description.company_name }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="{% if result.match_score >= 70 %}badge-success-soft{% else %}badge-warning-soft{% endif %}">
+                                    {{ result.match_score|floatformat:1 }}%
+                                </span>
+                            </td>
+                            <td>
+                                {% if result.resume_analysis %}
+                                    <span class="{% if result.resume_analysis.resume_score >= 70 %}badge-success-soft{% else %}badge-warning-soft{% endif %}">
+                                        {{ result.resume_analysis.resume_score|floatformat:1 }}%
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted-soft">Not available</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ result.created_at|date:"M d, Y" }}</td>
+                            <td class="text-end">
+                                <a class="btn icon-btn" href="{% url 'report_detail' result.id %}" aria-label="View report">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-file-earmark-text"></i>
+            <h4>No reports yet</h4>
+            <p>Analyze a resume against a job description to create your first report.</p>
+            <a class="btn btn-primary" href="{% url 'analyze_form' %}">Analyze Resume</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
