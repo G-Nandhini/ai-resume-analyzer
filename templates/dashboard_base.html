@@ -46,10 +46,6 @@
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
             </a>
-            <a class="nav-link" href="#">
-                <i class="bi bi-gear"></i>
-                <span>Settings</span>
-            </a>
             <a class="nav-link" href="{% url 'logout' %}">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Logout</span>
@@ -67,6 +63,9 @@
             </div>
 
             <div class="topbar-actions">
+                <button class="btn icon-btn" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                    <i class="bi bi-moon-stars"></i>
+                </button>
                 <div class="dropdown notification-dropdown">
                     <button class="btn icon-btn position-relative" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="Notifications">
                         <i class="bi bi-bell"></i>
@@ -152,7 +151,6 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><i class="bi bi-bell"></i><span>Notifications</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
             <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i><span>Profile</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-gear"></i><span>Settings</span></a>
             <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
         </nav>
     </div>

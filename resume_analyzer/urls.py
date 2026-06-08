@@ -17,10 +17,10 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
-from apps.analysis.views import dashboard
+from apps.analysis.views import dashboard, landing_page
 
 urlpatterns = [
-    path('', dashboard, name='home'),
+    path('', landing_page, name='home'),
     path('dashboard/', dashboard, name='dashboard'),
     path('', include('apps.accounts.urls')),
     path('', include('apps.resumes.urls')),

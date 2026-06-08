@@ -5,38 +5,229 @@
 {% block page_title %}Profile{% endblock %}
 
 {% block content %}
-<div class="row g-4">
-    <div class="col-12 col-xl-4">
-        <section class="app-card profile-summary">
-            <div class="profile-avatar">
-                {{ request.user.first_name|first|default:request.user.username|first|upper }}
-            </div>
-            <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
-            <p class="text-muted-soft mb-0">{{ request.user.email|default:"No email added" }}</p>
-        </section>
-    </div>
-    <div class="col-12 col-xl-8">
-        <section class="app-card">
-            <h3 class="section-title">Account Details</h3>
-            <div class="profile-detail-list">
-                <div>
-                    <span>Username</span>
-                    <strong>{{ request.user.username }}</strong>
-                </div>
-                <div>
-                    <span>First Name</span>
-                    <strong>{{ request.user.first_name|default:"Not added" }}</strong>
-                </div>
-                <div>
-                    <span>Last Name</span>
-                    <strong>{{ request.user.last_name|default:"Not added" }}</strong>
-                </div>
-                <div>
-                    <span>Email</span>
-                    <strong>{{ request.user.email|default:"Not added" }}</strong>
+<section class="profile-dashboard">
+    <div class="row g-3 align-items-stretch mb-3">
+        <div class="col-12 col-xl-4">
+            <div class="card profile-card h-100">
+                <div class="card-body">
+                    <div class="profile-card-top">
+                        <div class="profile-avatar profile-avatar-lg">{{ avatar_initial }}</div>
+                        <a class="btn btn-outline-primary btn-sm" href="#account-info">
+                            <i class="bi bi-pencil-square me-1"></i>Edit Profile
+                        </a>
+                    </div>
+                    <h3>{{ display_name }}</h3>
+                    <p class="profile-email">{{ request.user.email|default:"No email added" }}</p>
+                    <div class="profile-member">
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Member since {{ member_since|date:"M d, Y" }}</span>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <div class="col-12 col-xl-8">
+            <div class="row g-3 h-100">
+                <div class="col-12 col-lg-5">
+                    <div class="card profile-completion-card h-100">
+                        <div class="card-body">
+                            <div class="profile-card-heading">
+                                <div>
+                                    <span class="eyebrow-soft">Profile Completion</span>
+                                    <h3>{{ profile_completion }}%</h3>
+                                </div>
+                                <i class="bi bi-person-check"></i>
+                            </div>
+                            <div class="progress profile-progress" role="progressbar" aria-label="Profile completion" aria-valuenow="{{ profile_completion }}" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" style="width: {{ profile_completion }}%"></div>
+                            </div>
+                            <p class="text-muted-soft mb-0">Complete your account details and run analyses to unlock richer career insights.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-7">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <i class="bi bi-file-earmark-person"></i>
+                                    <span>Total Resumes</span>
+                                    <strong>{{ total_resumes }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <i class="bi bi-briefcase"></i>
+                                    <span>Job Descriptions</span>
+                                    <strong>{{ total_job_descriptions }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <i class="bi bi-stars"></i>
+                                    <span>Total Analyses</span>
+                                    <strong>{{ total_analyses }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                    <span>Avg Match</span>
+                                    <strong>{{ average_match_score|floatformat:1 }}%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <div class="row g-3">
+        <div class="col-12 col-xl-7">
+            <div class="card h-100" id="account-info">
+                <div class="card-body">
+                    <div class="profile-section-header">
+                        <div>
+                            <span class="eyebrow-soft">Account</span>
+                            <h3 class="section-title mb-0">Account Information</h3>
+                        </div>
+                        <span class="badge-success-soft">Active</span>
+                    </div>
+                    <div class="account-info-grid">
+                        <div>
+                            <span>Username</span>
+                            <strong>{{ request.user.username }}</strong>
+                        </div>
+                        <div>
+                            <span>First Name</span>
+                            <strong>{{ request.user.first_name|default:"Not added" }}</strong>
+                        </div>
+                        <div>
+                            <span>Last Name</span>
+                            <strong>{{ request.user.last_name|default:"Not added" }}</strong>
+                        </div>
+                        <div>
+                            <span>Email</span>
+                            <strong>{{ request.user.email|default:"Not added" }}</strong>
+                        </div>
+                        <div>
+                            <span>Joined Date</span>
+                            <strong>{{ request.user.date_joined|date:"M d, Y" }}</strong>
+                        </div>
+                        <div>
+                            <span>Last Login</span>
+                            <strong>{{ request.user.last_login|date:"M d, Y, g:i A"|default:"Not available" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="profile-section-header">
+                        <div>
+                            <span class="eyebrow-soft">Activity</span>
+                            <h3 class="section-title mb-0">Recent Activities</h3>
+                        </div>
+                    </div>
+                    <div class="activity-list">
+                        {% for activity in recent_activities %}
+                            <div class="activity-item">
+                                <span class="activity-icon"><i class="bi {{ activity.icon }}"></i></span>
+                                <div>
+                                    <strong>{{ activity.title }}</strong>
+                                    <p>{{ activity.description }}</p>
+                                    <small>{{ activity.created_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="profile-empty-state">
+                                <i class="bi bi-clock-history"></i>
+                                <strong>No recent activity</strong>
+                                <span>Upload resumes, add job descriptions, and run analyses to see activity here.</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="profile-section-header">
+                        <div>
+                            <span class="eyebrow-soft">AI Career Insights</span>
+                            <h3 class="section-title mb-0">Skills and Learning Signals</h3>
+                        </div>
+                        <a class="btn btn-primary btn-sm" href="{% url 'analyze_form' %}">
+                            <i class="bi bi-stars me-1"></i>Run Analysis
+                        </a>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-lg-4">
+                            <div class="insight-panel">
+                                <div class="insight-panel-title">
+                                    <i class="bi bi-check2-circle text-success"></i>
+                                    <h4>Top Skills</h4>
+                                </div>
+                                <div class="skill-cloud">
+                                    {% for skill, count in top_skills %}
+                                        <span class="skill-pill skill-pill-success">{{ skill }}</span>
+                                    {% empty %}
+                                        <p class="text-muted-soft mb-0">No matched skills yet.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="insight-panel">
+                                <div class="insight-panel-title">
+                                    <i class="bi bi-exclamation-circle text-danger"></i>
+                                    <h4>Missing Skills</h4>
+                                </div>
+                                <div class="skill-cloud">
+                                    {% for skill, count in missing_skills %}
+                                        <span class="skill-pill skill-pill-danger">{{ skill }}</span>
+                                    {% empty %}
+                                        <p class="text-muted-soft mb-0">No missing skills found.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="insight-panel">
+                                <div class="insight-panel-title">
+                                    <i class="bi bi-lightbulb text-warning"></i>
+                                    <h4>Suggested Learning Areas</h4>
+                                </div>
+                                <div class="learning-list">
+                                    {% for area, count in suggested_learning_areas %}
+                                        <div>
+                                            <span>{{ area }}</span>
+                                            <small>{{ count }} signal{{ count|pluralize }}</small>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted-soft mb-0">Run more analyses to generate learning suggestions.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

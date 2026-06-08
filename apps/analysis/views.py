@@ -17,6 +17,10 @@ from .models import InterviewQuestion, JDMatchResult
 from .services import analyze_resume_against_jd, generate_basic_interview_questions
 
 
+def landing_page(request):
+    return render(request, 'landing.html')
+
+
 @login_required
 def dashboard(request):
     user_match_results = JDMatchResult.objects.filter(

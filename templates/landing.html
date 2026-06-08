@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}ResumeIQ | AI Resume Analyzer{% endblock %}
+
+{% block body %}
+<div class="landing-page">
+    <nav class="landing-navbar navbar navbar-expand-lg">
+        <div class="container landing-nav-inner">
+            <a class="landing-brand" href="{% url 'home' %}" aria-label="ResumeIQ home">
+                <span class="landing-brand-mark"><i class="bi bi-file-earmark-bar-graph"></i></span>
+                <span>ResumeIQ</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav" aria-controls="landingNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="landingNav">
+                <div class="navbar-nav mx-lg-auto">
+                    <a class="nav-link" href="#features">Features</a>
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                    <a class="nav-link" href="#statistics">Statistics</a>
+                </div>
+                <div class="landing-nav-actions">
+                    <button class="btn icon-btn" type="button" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                    <a class="btn btn-outline-primary" href="{% url 'login' %}">Login</a>
+                    <a class="btn btn-primary" href="{% url 'register' %}">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="landing-hero">
+            <div class="container landing-hero-grid">
+                <div class="landing-hero-copy">
+                    <span class="landing-eyebrow">AI Resume Analyzer</span>
+                    <h1>Analyze Your Resume with AI</h1>
+                    <p>Upload your resume, compare it with job descriptions, identify missing skills, and prepare for interviews.</p>
+                    <div class="landing-hero-actions">
+                        <a class="btn btn-primary btn-lg" href="{% url 'register' %}">
+                            <i class="bi bi-arrow-right-circle"></i>
+                            Get Started
+                        </a>
+                        <a class="btn btn-outline-primary btn-lg" href="{% url 'login' %}">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Login
+                        </a>
+                    </div>
+                </div>
+                <div class="landing-product-panel" aria-label="Resume analysis preview">
+                    <div class="analysis-preview-header">
+                        <div>
+                            <span>Match Score</span>
+                            <strong>86%</strong>
+                        </div>
+                        <span class="badge-success-soft">Ready</span>
+                    </div>
+                    <div class="score-ring">
+                        <span>86%</span>
+                    </div>
+                    <div class="preview-bars">
+                        <div>
+                            <span>Python</span>
+                            <strong>Matched</strong>
+                        </div>
+                        <div class="preview-bar"><span style="width: 92%"></span></div>
+                        <div>
+                            <span>Leadership</span>
+                            <strong>Strong</strong>
+                        </div>
+                        <div class="preview-bar"><span style="width: 78%"></span></div>
+                        <div>
+                            <span>Cloud Skills</span>
+                            <strong>Improve</strong>
+                        </div>
+                        <div class="preview-bar warning"><span style="width: 46%"></span></div>
+                    </div>
+                    <div class="preview-insight">
+                        <i class="bi bi-stars"></i>
+                        <p>Add AWS deployment experience and two project metrics to improve the match.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-section" id="features">
+            <div class="container">
+                <div class="landing-section-heading">
+                    <span class="landing-eyebrow">Features</span>
+                    <h2>Everything you need to refine a resume for the role.</h2>
+                </div>
+                <div class="feature-grid">
+                    <article class="feature-card">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <h3>Resume Parsing</h3>
+                        <p>Extract skills, education, experience, and project details from uploaded resumes.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="bi bi-briefcase"></i>
+                        <h3>JD Matching</h3>
+                        <p>Compare candidate profiles against job descriptions and surface match scores.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="bi bi-stars"></i>
+                        <h3>AI Insights</h3>
+                        <p>Spot missing skills, weak sections, and practical edits for stronger applications.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="bi bi-chat-square-text"></i>
+                        <h3>Interview Questions</h3>
+                        <p>Create role-aware HR, technical, and project-based questions from each analysis.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="bi bi-filetype-pdf"></i>
+                        <h3>PDF Reports</h3>
+                        <p>Export clean analysis reports for review, coaching, and interview preparation.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-section how-section" id="how-it-works">
+            <div class="container">
+                <div class="landing-section-heading">
+                    <span class="landing-eyebrow">How It Works</span>
+                    <h2>From upload to interview prep in three focused steps.</h2>
+                </div>
+                <div class="steps-grid">
+                    <article class="step-item">
+                        <span>01</span>
+                        <h3>Upload Resume</h3>
+                        <p>Add a resume and let ResumeIQ parse the important candidate details.</p>
+                    </article>
+                    <article class="step-item">
+                        <span>02</span>
+                        <h3>Match a JD</h3>
+                        <p>Paste or create a job description to measure fit and missing skills.</p>
+                    </article>
+                    <article class="step-item">
+                        <span>03</span>
+                        <h3>Act on Insights</h3>
+                        <p>Review recommendations, generate interview questions, and export reports.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-section stats-section" id="statistics">
+            <div class="container">
+                <div class="stats-band">
+                    <div>
+                        <span class="landing-eyebrow">Statistics</span>
+                        <h2>Built for faster, clearer resume decisions.</h2>
+                    </div>
+                    <div class="stats-grid">
+                        <article>
+                            <strong>5+</strong>
+                            <span>Analysis modules</span>
+                        </article>
+                        <article>
+                            <strong>3</strong>
+                            <span>Question types</span>
+                        </article>
+                        <article>
+                            <strong>PDF</strong>
+                            <span>Export ready</span>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing-footer">
+        <div class="container landing-footer-inner">
+            <a class="landing-brand" href="{% url 'home' %}">
+                <span class="landing-brand-mark"><i class="bi bi-file-earmark-bar-graph"></i></span>
+                <span>ResumeIQ</span>
+            </a>
+            <p>AI-powered resume analysis for smarter job matching and interview preparation.</p>
+            <div>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="{% url 'login' %}">Login</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
