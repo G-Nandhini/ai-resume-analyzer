@@ -1,0 +1,71 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Job Descriptions | ResumeIQ{% endblock %}
+
+{% block page_title %}Job Descriptions{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class="app-card">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h3 class="section-title mb-1">Saved Job Descriptions</h3>
+            <p class="text-muted-soft mb-0">Create and manage the job descriptions you want to match against resumes.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'job_create' %}">
+            <i class="bi bi-plus-circle me-2"></i>Create JD
+        </a>
+    </div>
+
+    {% if jobs %}
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Experience</th>
+                        <th>Created On</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                        <tr>
+                            <td>
+                                <strong>{{ job.job_title }}</strong>
+                                {% if job.required_skills %}
+                                    <div class="text-muted-soft small">{{ job.required_skills|truncatechars:90 }}</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ job.company_name|default:"-" }}</td>
+                            <td>{{ job.experience_required|default:"-" }}</td>
+                            <td>{{ job.created_at|date:"d M Y, h:i A" }}</td>
+                            <td class="text-end">
+                                <a class="btn icon-btn" href="{% url 'job_edit' job.id %}" aria-label="Edit job description">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a class="btn icon-btn ms-1" href="{% url 'job_delete' job.id %}" aria-label="Delete job description">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-briefcase"></i>
+            <h4>No job descriptions yet</h4>
+            <p>Add a JD to start preparing resume matches.</p>
+            <a class="btn btn-primary" href="{% url 'job_create' %}">Create JD</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

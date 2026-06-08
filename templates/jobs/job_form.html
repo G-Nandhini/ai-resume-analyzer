@@ -1,0 +1,72 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}{{ page_heading }} | ResumeIQ{% endblock %}
+
+{% block page_title %}{{ page_heading }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-12 col-xl-8">
+        <section class="app-card">
+            <h3 class="section-title">{{ page_heading }}</h3>
+            <p class="text-muted-soft mb-4">Save the job details you want to compare with candidate resumes.</p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.job_title.id_for_label }}">Job Title</label>
+                    {{ form.job_title }}
+                    {% for error in form.job_title.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="{{ form.company_name.id_for_label }}">Company Name</label>
+                        {{ form.company_name }}
+                        {% for error in form.company_name.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="{{ form.experience_required.id_for_label }}">Experience Required</label>
+                        {{ form.experience_required }}
+                        {% for error in form.experience_required.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <label class="form-label" for="{{ form.required_skills.id_for_label }}">Required Skills</label>
+                    {{ form.required_skills }}
+                    {% for error in form.required_skills.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {% for error in form.description.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-primary" type="submit" name="action" value="save">Save JD</button>
+                    <button class="btn btn-secondary" type="submit" name="action" value="analyze">Save &amp; Analyze</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'job_list' %}">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-4">
+        <section class="app-card">
+            <h3 class="section-title">JD Snapshot</h3>
+            <ul class="tips-list">
+                <li><i class="bi bi-check-circle"></i>Keep responsibilities specific.</li>
+                <li><i class="bi bi-check-circle"></i>Separate must-have and nice-to-have skills.</li>
+                <li><i class="bi bi-check-circle"></i>Include seniority and domain expectations.</li>
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}

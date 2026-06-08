@@ -14,15 +14,15 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a class="nav-link active" href="{% url 'dashboard' %}">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
                 <i class="bi bi-grid-1x2"></i>
                 <span>Dashboard</span>
             </a>
-            <a class="nav-link" href="{% url 'resume_upload' %}">
+            <a class="nav-link {% if request.resolver_match.url_name == 'resume_upload' or request.resolver_match.url_name == 'resume_list' or request.resolver_match.url_name == 'resume_detail' %}active{% endif %}" href="{% url 'resume_upload' %}">
                 <i class="bi bi-cloud-arrow-up"></i>
                 <span>Upload Resume</span>
             </a>
-            <a class="nav-link" href="#">
+            <a class="nav-link {% if request.resolver_match.url_name == 'job_list' or request.resolver_match.url_name == 'job_create' or request.resolver_match.url_name == 'job_edit' or request.resolver_match.url_name == 'job_delete' %}active{% endif %}" href="{% url 'job_list' %}">
                 <i class="bi bi-briefcase"></i>
                 <span>Job Descriptions</span>
             </a>
@@ -97,9 +97,9 @@
     </div>
     <div class="offcanvas-body">
         <nav class="sidebar-nav">
-            <a class="nav-link active" href="{% url 'dashboard' %}"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
-            <a class="nav-link" href="{% url 'resume_upload' %}"><i class="bi bi-cloud-arrow-up"></i><span>Upload Resume</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-briefcase"></i><span>Job Descriptions</span></a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'resume_upload' or request.resolver_match.url_name == 'resume_list' or request.resolver_match.url_name == 'resume_detail' %}active{% endif %}" href="{% url 'resume_upload' %}"><i class="bi bi-cloud-arrow-up"></i><span>Upload Resume</span></a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'job_list' or request.resolver_match.url_name == 'job_create' or request.resolver_match.url_name == 'job_edit' or request.resolver_match.url_name == 'job_delete' %}active{% endif %}" href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i><span>Job Descriptions</span></a>
             <a class="nav-link" href="#"><i class="bi bi-stars"></i><span>Analyze Resume</span></a>
             <a class="nav-link" href="#"><i class="bi bi-file-earmark-text"></i><span>Reports</span></a>
             <a class="nav-link" href="#"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
