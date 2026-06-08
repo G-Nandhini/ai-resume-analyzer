@@ -5,13 +5,14 @@ from django.urls import reverse
 from apps.jobs.models import JobDescription
 from apps.resumes.models import Resume
 
-from .models import JDMatchResult, ResumeAnalysis
+from .models import InterviewQuestion, JDMatchResult, ResumeAnalysis
 from .services import (
     analyze_resume_against_jd,
     calculate_match_score,
     calculate_resume_score,
     clean_text,
     find_matched_skills,
+    generate_basic_interview_questions,
     generate_basic_suggestions,
     parse_required_skills,
 )
@@ -97,6 +98,63 @@ class AnalysisServiceTests(TestCase):
         self.assertEqual(result.matched_skills, ['Python', 'SQL'])
         self.assertEqual(result.missing_skills, ['Django'])
         self.assertAlmostEqual(result.match_score, 66.66666666666666)
+
+    def test_generate_basic_interview_questions_creates_five_of_each_type(self):
+        resume = Resume.objects.create(
+            user=self.user,
+            title='Backend Resume',
+            file='resumes/backend.pdf',
+            extracted_text='Skills: Python, SQL\nProjects: Built APIs.',
+        )
+        job_description = JobDescription.objects.create(
+            user=self.user,
+            job_title='Backend Developer',
+            required_skills='Python, Django, SQL',
+            description='Build Django apps.',
+        )
+        result = analyze_resume_against_jd(resume, job_description)
+
+        questions = generate_basic_interview_questions(result)
+
+        self.assertEqual(questions.count(), 15)
+        self.assertEqual(
+            questions.filter(question_type=InterviewQuestion.HR).count(),
+            5,
+        )
+        self.assertEqual(
+            questions.filter(question_type=InterviewQuestion.TECHNICAL).count(),
+            5,
+        )
+        self.assertEqual(
+            questions.filter(question_type=InterviewQuestion.PROJECT_BASED).count(),
+            5,
+        )
+        self.assertTrue(
+            questions.filter(
+                question_type=InterviewQuestion.TECHNICAL,
+                question__icontains='Django',
+            ).exists(),
+        )
+
+    def test_generate_basic_interview_questions_does_not_duplicate_questions(self):
+        resume = Resume.objects.create(
+            user=self.user,
+            title='Backend Resume',
+            file='resumes/backend.pdf',
+            extracted_text='Skills: Python',
+        )
+        job_description = JobDescription.objects.create(
+            user=self.user,
+            job_title='Backend Developer',
+            required_skills='Python',
+            description='Build services.',
+        )
+        result = analyze_resume_against_jd(resume, job_description)
+
+        generate_basic_interview_questions(result)
+        generate_basic_interview_questions(result)
+
+        self.assertEqual(result.interview_questions.count(), 15)
 
 
 class AnalyzeViewTests(TestCase):
@@ -199,6 +257,65 @@ class AnalyzeViewTests(TestCase):
 
         response = self.client.get(
             reverse('analysis_result', kwargs={'match_result_id': result.id}),
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_interview_questions_requires_login(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+
+        response = self.client.get(
+            reverse('interview_questions', kwargs={'match_result_id': result.id}),
+        )
+
+        self.assertRedirects(
+            response,
+            (
+                f"{reverse('login')}?next="
+                f"{reverse('interview_questions', kwargs={'match_result_id': result.id})}"
+            ),
+        )
+
+    def test_latest_interview_questions_redirects_to_latest_owned_result(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse('latest_interview_questions'))
+
+        self.assertRedirects(
+            response,
+            reverse('interview_questions', kwargs={'match_result_id': result.id}),
+            fetch_redirect_response=False,
+        )
+
+    def test_latest_interview_questions_redirects_without_results(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse('latest_interview_questions'))
+
+        self.assertRedirects(response, reverse('analyze_form'))
+
+    def test_interview_questions_page_generates_and_shows_owned_questions(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse('interview_questions', kwargs={'match_result_id': result.id}),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'analysis/interview_questions.html')
+        self.assertContains(response, 'HR Questions')
+        self.assertContains(response, 'Technical Questions')
+        self.assertContains(response, 'Project Based Questions')
+        self.assertEqual(result.interview_questions.count(), 15)
+
+    def test_interview_questions_does_not_show_another_users_result(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.other_user)
+
+        response = self.client.get(
+            reverse('interview_questions', kwargs={'match_result_id': result.id}),
         )
 
         self.assertEqual(response.status_code, 404)

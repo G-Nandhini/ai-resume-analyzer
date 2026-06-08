@@ -34,7 +34,7 @@
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Reports</span>
             </a>
-            <a class="nav-link" href="#">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}">
                 <i class="bi bi-chat-square-text"></i>
                 <span>Interview Questions</span>
             </a>
@@ -102,7 +102,7 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'job_list' or request.resolver_match.url_name == 'job_create' or request.resolver_match.url_name == 'job_edit' or request.resolver_match.url_name == 'job_delete' %}active{% endif %}" href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i><span>Job Descriptions</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'analyze_form' or request.resolver_match.url_name == 'analysis_result' %}active{% endif %}" href="{% url 'analyze_form' %}"><i class="bi bi-stars"></i><span>Analyze Resume</span></a>
             <a class="nav-link" href="#"><i class="bi bi-file-earmark-text"></i><span>Reports</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
             <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i><span>Profile</span></a>
             <a class="nav-link" href="#"><i class="bi bi-gear"></i><span>Settings</span></a>
             <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
