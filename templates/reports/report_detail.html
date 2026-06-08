@@ -1,0 +1,127 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Report Detail | ResumeIQ{% endblock %}
+
+{% block page_title %}Report Detail{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-xl-row justify-content-between gap-3 align-items-xl-center mb-4">
+    <div>
+        <h3 class="section-title mb-1">{{ match_result.resume.title }}</h3>
+        <p class="text-muted-soft mb-0">
+            {{ match_result.job_description.job_title }}
+            {% if match_result.job_description.company_name %}
+                at {{ match_result.job_description.company_name }}
+            {% endif %}
+        </p>
+    </div>
+    <div class="d-flex flex-wrap gap-2 justify-content-xl-end">
+        <a class="btn btn-outline-secondary" href="{% url 'report_list' %}">
+            <i class="bi bi-arrow-left me-2"></i>Back to Reports
+        </a>
+        <button class="btn btn-primary" type="button" disabled>
+            <i class="bi bi-filetype-pdf me-2"></i>Download PDF Coming Soon
+        </button>
+    </div>
+</div>
+
+<section class="app-card mb-4">
+    <div class="row g-4">
+        <div class="col-12 col-md-3">
+            <p class="text-muted-soft mb-1">Match Score</p>
+            <h4 class="fw-bold mb-0">{{ match_result.match_score|floatformat:1 }}%</h4>
+        </div>
+        <div class="col-12 col-md-3">
+            <p class="text-muted-soft mb-1">Resume Score</p>
+            <h4 class="fw-bold mb-0">
+                {% if match_result.resume_analysis %}
+                    {{ match_result.resume_analysis.resume_score|floatformat:1 }}%
+                {% else %}
+                    Not available
+                {% endif %}
+            </h4>
+        </div>
+        <div class="col-12 col-md-3">
+            <p class="text-muted-soft mb-1">Created Date</p>
+            <h4 class="fw-semibold mb-0">{{ match_result.created_at|date:"M d, Y" }}</h4>
+        </div>
+        <div class="col-12 col-md-3">
+            <p class="text-muted-soft mb-1">Resume File</p>
+            <h4 class="fw-semibold mb-0">{{ match_result.resume.file.name }}</h4>
+        </div>
+    </div>
+</section>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-6">
+        <section class="app-card h-100">
+            <h4 class="section-title">Matched Skills</h4>
+            <div class="d-flex flex-wrap gap-2">
+                {% for skill in match_result.matched_skills %}
+                    <span class="badge rounded-pill text-bg-success">{{ skill }}</span>
+                {% empty %}
+                    <p class="text-muted-soft mb-0">No matched skills found.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+    <div class="col-12 col-xl-6">
+        <section class="app-card h-100">
+            <h4 class="section-title">Missing Skills</h4>
+            <div class="d-flex flex-wrap gap-2">
+                {% for skill in match_result.missing_skills %}
+                    <span class="badge rounded-pill text-bg-danger">{{ skill }}</span>
+                {% empty %}
+                    <p class="text-muted-soft mb-0">No missing skills found.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-6">
+        <section class="app-card h-100">
+            <h4 class="section-title">Missing Sections</h4>
+            <ul class="list-group list-group-flush">
+                {% if match_result.resume_analysis %}
+                    {% for section in match_result.resume_analysis.missing_sections %}
+                        <li class="list-group-item px-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-circle text-danger"></i>
+                            <span class="text-capitalize">{{ section }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item px-0 text-muted-soft">All basic sections were found.</li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item px-0 text-muted-soft">Resume analysis details are not available.</li>
+                {% endif %}
+            </ul>
+        </section>
+    </div>
+    <div class="col-12 col-xl-6">
+        <section class="app-card h-100">
+            <h4 class="section-title">Suggestions</h4>
+            <ul class="list-group list-group-flush">
+                {% if match_result.resume_analysis %}
+                    {% for suggestion in match_result.resume_analysis.suggestions %}
+                        <li class="list-group-item px-0 d-flex gap-2">
+                            <i class="bi bi-lightbulb text-warning"></i>
+                            <span>{{ suggestion }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item px-0 text-muted-soft">No suggestions available.</li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item px-0 text-muted-soft">Resume analysis details are not available.</li>
+                {% endif %}
+            </ul>
+        </section>
+    </div>
+
+    <div class="col-12">
+        <section class="app-card">
+            <h4 class="section-title">Match Reason</h4>
+            <p class="mb-0">{{ match_result.reason|default:"No reason provided." }}</p>
+        </section>
+    </div>
+</div>
+{% endblock %}
