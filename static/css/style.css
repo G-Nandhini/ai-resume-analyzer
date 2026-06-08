@@ -170,6 +170,115 @@ a {
     color: var(--color-primary);
 }
 
+.notification-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border: 2px solid var(--color-bg);
+    border-radius: 999px;
+    background: var(--color-danger);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.notification-menu {
+    width: min(360px, calc(100vw - 32px));
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+.notification-menu-header,
+.notification-preview,
+.notification-view-all,
+.notification-empty {
+    padding: 14px 16px;
+}
+
+.notification-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.notification-menu-header a,
+.notification-view-all,
+.notification-read-link {
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.notification-preview-list {
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+.notification-preview {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+}
+
+.notification-preview strong,
+.notification-title {
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.notification-preview p {
+    display: -webkit-box;
+    margin: 4px 0;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.45;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.notification-preview span,
+.notification-empty {
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+.notification-unread {
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.notification-read-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    border-radius: 8px;
+    background: #FFFFFF;
+}
+
+.notification-view-all {
+    display: block;
+    text-align: center;
+}
+
 .user-chip {
     min-height: 46px;
     padding: 6px 10px 6px 6px;
