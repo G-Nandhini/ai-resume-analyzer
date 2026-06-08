@@ -461,6 +461,133 @@ a {
     text-align: right;
 }
 
+.upload-dropzone {
+    display: grid;
+    place-items: center;
+    min-height: 260px;
+    padding: 28px;
+    border: 2px dashed rgba(37, 99, 235, 0.28);
+    border-radius: 8px;
+    background: rgba(37, 99, 235, 0.035);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.upload-dropzone:hover {
+    border-color: rgba(37, 99, 235, 0.58);
+    background: rgba(37, 99, 235, 0.06);
+}
+
+.upload-dropzone i {
+    color: var(--color-primary);
+    font-size: 48px;
+}
+
+.upload-dropzone strong,
+.upload-dropzone span {
+    display: block;
+}
+
+.upload-dropzone strong {
+    margin-top: 10px;
+    font-size: 17px;
+}
+
+.upload-dropzone span {
+    margin-top: 6px;
+    color: var(--color-muted);
+    font-size: 14px;
+}
+
+.upload-dropzone input[type="file"] {
+    max-width: 320px;
+    margin-top: 18px;
+}
+
+.tips-list {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tips-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--color-muted);
+    font-size: 14px;
+}
+
+.tips-list i {
+    color: var(--color-success);
+}
+
+.empty-state {
+    display: grid;
+    justify-items: center;
+    padding: 44px 20px;
+    text-align: center;
+}
+
+.empty-state i {
+    color: var(--color-primary);
+    font-size: 46px;
+}
+
+.empty-state h4 {
+    margin: 12px 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.empty-state p {
+    margin: 0 0 18px;
+    color: var(--color-muted);
+}
+
+.resume-meta {
+    display: grid;
+    gap: 18px;
+    margin: 0;
+}
+
+.resume-meta div {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.resume-meta div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.resume-meta dt {
+    margin-bottom: 6px;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.resume-meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.extracted-text-preview {
+    max-height: 420px;
+    overflow: auto;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: normal;
+}
+
 .form-control,
 .form-select {
     min-height: 44px;
