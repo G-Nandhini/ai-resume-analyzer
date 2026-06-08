@@ -1,0 +1,55 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Upload Resume | ResumeIQ{% endblock %}
+
+{% block page_title %}Upload Resume{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-12 col-xl-8">
+        <section class="app-card">
+            <h3 class="section-title">Upload Resume</h3>
+            <p class="text-muted-soft mb-4">Supported formats: PDF and DOCX. Max file size: 5MB.</p>
+
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.title.id_for_label }}">Resume Title</label>
+                    {{ form.title }}
+                    {% for error in form.title.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <label class="upload-dropzone" for="{{ form.file.id_for_label }}">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <strong>Drag and drop your resume here</strong>
+                    <span>or click to choose a PDF/DOCX file</span>
+                    {{ form.file }}
+                </label>
+                {% for error in form.file.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-primary" type="submit">Upload Resume</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'resume_list' %}">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-4">
+        <section class="app-card">
+            <h3 class="section-title">Tips for Better Analysis</h3>
+            <ul class="tips-list">
+                <li><i class="bi bi-check-circle"></i>Use a clean and updated resume.</li>
+                <li><i class="bi bi-check-circle"></i>Make skills easy to identify.</li>
+                <li><i class="bi bi-check-circle"></i>Include relevant project details.</li>
+                <li><i class="bi bi-check-circle"></i>Add education and certificates.</li>
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}

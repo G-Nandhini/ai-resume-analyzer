@@ -1,0 +1,65 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Resume Detail | ResumeIQ{% endblock %}
+
+{% block page_title %}Resume Detail{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-12 col-xl-8">
+        <section class="app-card">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+                <div>
+                    <h3 class="section-title mb-1">{{ resume.title }}</h3>
+                    <p class="text-muted-soft mb-0">Uploaded on {{ resume.uploaded_at|date:"d M Y, h:i A" }}</p>
+                </div>
+                <a class="btn btn-outline-primary" href="{{ resume.file.url }}" target="_blank" rel="noopener">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>Open File
+                </a>
+            </div>
+
+            <dl class="resume-meta">
+                <div>
+                    <dt>File</dt>
+                    <dd>{{ resume.file.name }}</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="app-card mt-4">
+            <h3 class="section-title">Extracted Text Preview</h3>
+            {% if resume.extracted_text %}
+                <div class="extracted-text-preview">{{ resume.extracted_text|truncatechars:3000|linebreaksbr }}</div>
+            {% else %}
+                <p class="text-muted-soft mb-0">No extracted text is available for this resume yet.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-4">
+        <section class="app-card">
+            <h3 class="section-title">Actions</h3>
+            <a class="btn btn-outline-secondary w-100 mb-2" href="{% url 'resume_list' %}">Back to Resumes</a>
+
+            {% if confirm_delete %}
+                <div class="alert alert-danger mt-3">Are you sure you want to delete this resume?</div>
+                <form method="post" action="{% url 'resume_delete' resume.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger w-100" type="submit">Confirm Delete</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'resume_delete' resume.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger w-100" type="submit">Delete Resume</button>
+                </form>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}
