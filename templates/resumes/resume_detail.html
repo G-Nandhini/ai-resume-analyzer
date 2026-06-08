@@ -48,10 +48,7 @@
                     <button class="btn btn-danger w-100" type="submit">Confirm Delete</button>
                 </form>
             {% else %}
-                <form method="post" action="{% url 'resume_delete' resume.id %}">
-                    {% csrf_token %}
-                    <button class="btn btn-danger w-100" type="submit">Delete Resume</button>
-                </form>
+                <a class="btn btn-danger w-100" href="{% url 'resume_delete' resume.id %}">Delete Resume</a>
             {% endif %}
         </section>
     </div>
