@@ -19,9 +19,9 @@
         <a class="btn btn-outline-secondary" href="{% url 'report_list' %}">
             <i class="bi bi-arrow-left me-2"></i>Back to Reports
         </a>
-        <button class="btn btn-primary" type="button" disabled>
-            <i class="bi bi-filetype-pdf me-2"></i>Download PDF Coming Soon
-        </button>
+        <a class="btn btn-primary" href="{% url 'report_download' match_result.id %}">
+            <i class="bi bi-filetype-pdf me-2"></i>Download PDF
+        </a>
     </div>
 </div>
 

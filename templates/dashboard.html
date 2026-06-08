@@ -5,62 +5,109 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="row g-4">
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card h-100">
-            <p class="text-muted-soft mb-2">Total Resumes</p>
-            <div class="d-flex align-items-center justify-content-between gap-3">
-                <h3 class="mb-0 fw-bold">{{ total_resumes }}</h3>
-                <span class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                    <i class="bi bi-file-earmark-person fs-5"></i>
-                </span>
-            </div>
-        </div>
+<section class="dashboard-welcome">
+    <div>
+        <span class="eyebrow-soft">Workspace overview</span>
+        <h3>Welcome back, {{ user_display_name }}</h3>
+        <p>Track resumes, job descriptions, and match results from one focused dashboard.</p>
     </div>
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card h-100">
-            <p class="text-muted-soft mb-2">Total Job Descriptions</p>
-            <div class="d-flex align-items-center justify-content-between gap-3">
-                <h3 class="mb-0 fw-bold">{{ total_job_descriptions }}</h3>
-                <span class="rounded-circle bg-info bg-opacity-10 text-info d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                    <i class="bi bi-briefcase fs-5"></i>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card h-100">
-            <p class="text-muted-soft mb-2">Average Match Score</p>
-            <div class="d-flex align-items-center justify-content-between gap-3">
-                <h3 class="mb-0 fw-bold">{{ average_match_score|floatformat:1 }}%</h3>
-                <span class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                    <i class="bi bi-graph-up-arrow fs-5"></i>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card h-100">
-            <p class="text-muted-soft mb-2">Best Match Score</p>
-            <div class="d-flex align-items-center justify-content-between gap-3">
-                <h3 class="mb-0 fw-bold">{{ best_match_score|floatformat:1 }}%</h3>
-                <span class="rounded-circle bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                    <i class="bi bi-trophy fs-5"></i>
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section class="app-card mt-4">
-    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-        <h3 class="section-title mb-0">Recent Resume Analyses</h3>
-        <a class="btn btn-outline-primary btn-sm" href="{% url 'analyze_form' %}">
+    <div class="quick-actions" aria-label="Quick actions">
+        <a class="btn btn-primary" href="{% url 'resume_upload' %}">
+            <i class="bi bi-cloud-arrow-up"></i>
+            Upload Resume
+        </a>
+        <a class="btn btn-outline-primary" href="{% url 'job_create' %}">
+            <i class="bi bi-plus-circle"></i>
+            Add Job Description
+        </a>
+        <a class="btn btn-secondary" href="{% url 'analyze_form' %}">
             <i class="bi bi-stars"></i>
-            New Analysis
+            Analyze Resume
         </a>
     </div>
-    <div class="table-responsive">
+</section>
+
+<section class="dashboard-metrics" aria-label="Dashboard metrics">
+    <article class="metric-card">
+        <span class="metric-icon text-primary bg-primary bg-opacity-10">
+            <i class="bi bi-file-earmark-person"></i>
+        </span>
+        <div>
+            <p>Total Resumes</p>
+            <strong>{{ total_resumes }}</strong>
+        </div>
+    </article>
+    <article class="metric-card">
+        <span class="metric-icon text-info bg-info bg-opacity-10">
+            <i class="bi bi-briefcase"></i>
+        </span>
+        <div>
+            <p>Job Descriptions</p>
+            <strong>{{ total_job_descriptions }}</strong>
+        </div>
+    </article>
+    <article class="metric-card">
+        <span class="metric-icon text-success bg-success bg-opacity-10">
+            <i class="bi bi-clipboard2-check"></i>
+        </span>
+        <div>
+            <p>Total Analyses</p>
+            <strong>{{ total_analyses }}</strong>
+        </div>
+    </article>
+    <article class="metric-card">
+        <span class="metric-icon text-warning bg-warning bg-opacity-10">
+            <i class="bi bi-trophy"></i>
+        </span>
+        <div>
+            <p>Best Match</p>
+            <strong>{{ best_match_score|floatformat:1 }}%</strong>
+        </div>
+    </article>
+</section>
+
+{% if not has_resumes or not has_job_descriptions or not has_analyses %}
+<section class="empty-state-grid" aria-label="Next steps">
+    {% if not has_resumes %}
+    <article class="empty-action">
+        <i class="bi bi-file-earmark-arrow-up"></i>
+        <h4>No resumes yet</h4>
+        <p>Upload a candidate resume to start building your analysis workspace.</p>
+        <a class="btn btn-primary btn-sm" href="{% url 'resume_upload' %}">Upload Resume</a>
+    </article>
+    {% endif %}
+    {% if not has_job_descriptions %}
+    <article class="empty-action">
+        <i class="bi bi-briefcase"></i>
+        <h4>No job descriptions yet</h4>
+        <p>Add a JD so ResumeIQ can compare skills, gaps, and fit.</p>
+        <a class="btn btn-primary btn-sm" href="{% url 'job_create' %}">Add Job Description</a>
+    </article>
+    {% endif %}
+    {% if not has_analyses %}
+    <article class="empty-action">
+        <i class="bi bi-stars"></i>
+        <h4>No analysis yet</h4>
+        <p>Analyze a resume against a job description to create your first report.</p>
+        <a class="btn btn-primary btn-sm" href="{% url 'analyze_form' %}">Analyze Resume</a>
+    </article>
+    {% endif %}
+</section>
+{% endif %}
+
+<section class="app-card recent-analyses-card">
+    <div class="section-heading">
+        <div>
+            <h3 class="section-title mb-1">Recent Analyses</h3>
+            <p class="text-muted-soft mb-0">Latest resume-to-job matches and scores.</p>
+        </div>
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'analyze_form' %}">
+            <i class="bi bi-stars"></i>
+            Analyze Resume
+        </a>
+    </div>
+    {% if recent_analyses %}
+    <div class="table-responsive dashboard-table">
         <table class="table align-middle mb-0">
             <thead>
                 <tr>
@@ -69,13 +116,15 @@
                     <th>Match Score</th>
                     <th>Resume Score</th>
                     <th>Date</th>
-                    <th>Action</th>
+                    <th><span class="visually-hidden">Action</span></th>
                 </tr>
             </thead>
             <tbody>
                 {% for analysis in recent_analyses %}
                 <tr>
-                    <td>{{ analysis.resume.title }}</td>
+                    <td>
+                        <span class="table-primary-text">{{ analysis.resume.title }}</span>
+                    </td>
                     <td>{{ analysis.job_description.job_title }}</td>
                     <td>
                         <span class="{% if analysis.match_score >= 70 %}badge-success-soft{% else %}badge-warning-soft{% endif %}">
@@ -92,26 +141,23 @@
                         {% endif %}
                     </td>
                     <td>{{ analysis.created_at|date:"M d, Y" }}</td>
-                    <td>
+                    <td class="text-end">
                         <a class="btn icon-btn" href="{% url 'analysis_result' analysis.id %}" aria-label="View analysis">
                             <i class="bi bi-eye"></i>
                         </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center py-5">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary mb-3" style="width: 52px; height: 52px;">
-                            <i class="bi bi-stars fs-4"></i>
-                        </div>
-                        <p class="fw-semibold mb-1">No analyses yet</p>
-                        <p class="text-muted-soft mb-3">Run your first resume-to-job match to see results here.</p>
-                        <a class="btn btn-primary btn-sm" href="{% url 'analyze_form' %}">Analyze Resume</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    {% else %}
+    <div class="empty-state compact-empty-state">
+        <i class="bi bi-stars"></i>
+        <h4>No analyses yet</h4>
+        <p>Run your first resume-to-job match to see results here.</p>
+        <a class="btn btn-primary btn-sm" href="{% url 'analyze_form' %}">Analyze Resume</a>
+    </div>
+    {% endif %}
 </section>
 {% endblock %}

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ match_result.resume.title }} Report</title>
+    <style>
+        @page {
+            margin: 26mm 20mm;
+        }
+
+        body {
+            color: #0f172a;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 26px;
+            line-height: 1.15;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #1d4ed8;
+            font-size: 16px;
+        }
+
+        h3 {
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .header {
+            padding-bottom: 18px;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .summary {
+            display: table;
+            width: 100%;
+            margin: 22px 0;
+            table-layout: fixed;
+        }
+
+        .summary-item {
+            display: table-cell;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-item strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 18px;
+        }
+
+        .section {
+            margin-top: 20px;
+            page-break-inside: avoid;
+        }
+
+        .pill-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .pill-list li {
+            display: inline-block;
+            margin: 0 6px 8px 0;
+            padding: 5px 9px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .empty {
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <p class="muted">ResumeIQ Analysis Report</p>
+        <h1>{{ match_result.resume.title }}</h1>
+        <p>
+            {{ match_result.job_description.job_title }}
+            {% if match_result.job_description.company_name %}
+                at {{ match_result.job_description.company_name }}
+            {% endif %}
+        </p>
+    </header>
+
+    <section class="summary">
+        <div class="summary-item">
+            <span class="muted">Resume Score</span>
+            <strong>
+                {% if match_result.resume_analysis %}
+                    {{ match_result.resume_analysis.resume_score|floatformat:1 }}%
+                {% else %}
+                    N/A
+                {% endif %}
+            </strong>
+        </div>
+        <div class="summary-item">
+            <span class="muted">JD Match Score</span>
+            <strong>{{ match_result.match_score|floatformat:1 }}%</strong>
+        </div>
+        <div class="summary-item">
+            <span class="muted">Report Date</span>
+            <strong>{{ match_result.created_at|date:"M d, Y" }}</strong>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Matched Skills</h2>
+        <ul class="pill-list">
+            {% for skill in match_result.matched_skills %}
+                <li>{{ skill }}</li>
+            {% empty %}
+                <li class="empty">No matched skills found.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Missing Skills</h2>
+        <ul class="pill-list">
+            {% for skill in match_result.missing_skills %}
+                <li>{{ skill }}</li>
+            {% empty %}
+                <li class="empty">No missing skills found.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Suggestions</h2>
+        {% if match_result.resume_analysis %}
+            <ul>
+                {% for suggestion in match_result.resume_analysis.suggestions %}
+                    <li>{{ suggestion }}</li>
+                {% empty %}
+                    <li class="empty">No suggestions available.</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty">Resume analysis details are not available.</p>
+        {% endif %}
+    </section>
+
+    <section class="section">
+        <h2>Interview Questions</h2>
+        <ol>
+            {% for question in interview_questions %}
+                <li>
+                    <h3>{{ question.question_type }}</h3>
+                    <p>{{ question.question }}</p>
+                    {% if question.answer %}
+                        <p class="muted">Answer: {{ question.answer }}</p>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="empty">No interview questions available.</li>
+            {% endfor %}
+        </ol>
+    </section>
+</body>
+</html>

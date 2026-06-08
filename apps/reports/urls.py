@@ -9,4 +9,9 @@ urlpatterns = [
         views.report_detail,
         name='report_detail',
     ),
+    path(
+        'reports/<int:match_result_id>/download/',
+        views.report_download,
+        name='report_download',
+    ),
 ]

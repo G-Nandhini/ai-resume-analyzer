@@ -26,14 +26,27 @@ def dashboard(request):
         'job_description',
         'resume_analysis',
     )[:10]
+    total_resumes = Resume.objects.filter(user=request.user).count()
+    total_job_descriptions = JobDescription.objects.filter(
+        user=request.user,
+    ).count()
+    total_analyses = user_match_results.count()
+    user_display_name = (
+        request.user.get_full_name()
+        or request.user.first_name
+        or request.user.username
+    )
 
     context = {
-        'total_resumes': Resume.objects.filter(user=request.user).count(),
-        'total_job_descriptions': JobDescription.objects.filter(
-            user=request.user,
-        ).count(),
+        'user_display_name': user_display_name,
+        'total_resumes': total_resumes,
+        'total_job_descriptions': total_job_descriptions,
+        'total_analyses': total_analyses,
         'average_match_score': score_summary['average_match_score'] or 0,
         'best_match_score': score_summary['best_match_score'] or 0,
+        'has_resumes': total_resumes > 0,
+        'has_job_descriptions': total_job_descriptions > 0,
+        'has_analyses': total_analyses > 0,
         'recent_analyses': recent_analyses,
     }
     return render(request, 'dashboard.html', context)
