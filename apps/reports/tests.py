@@ -1,8 +1,10 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.analysis.models import JDMatchResult, ResumeAnalysis
+from apps.analysis.models import InterviewQuestion, JDMatchResult, ResumeAnalysis
 from apps.jobs.models import JobDescription
 from apps.resumes.models import Resume
 
@@ -67,6 +69,11 @@ class ReportViewTests(TestCase):
             resume_analysis=self.other_resume_analysis,
             match_score=99,
         )
+        self.question = InterviewQuestion.objects.create(
+            match_result=self.match_result,
+            question_type=InterviewQuestion.TECHNICAL,
+            question='How have you used Django in production?',
+        )
 
     def test_report_list_requires_login(self):
         response = self.client.get(reverse('report_list'))
@@ -109,7 +116,7 @@ class ReportViewTests(TestCase):
         self.assertTemplateUsed(response, 'reports/report_detail.html')
         self.assertContains(response, 'Owner Resume')
         self.assertContains(response, 'Backend Developer')
-        self.assertContains(response, 'Download PDF Coming Soon')
+        self.assertContains(response, 'Download PDF')
         self.assertContains(response, 'Matched Skills')
         self.assertContains(response, 'Missing Skills')
         self.assertContains(response, 'Strong backend alignment.')
@@ -120,6 +127,60 @@ class ReportViewTests(TestCase):
         response = self.client.get(
             reverse(
                 'report_detail',
+                kwargs={'match_result_id': self.other_match_result.id},
+            ),
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_report_download_requires_login(self):
+        response = self.client.get(
+            reverse(
+                'report_download',
+                kwargs={'match_result_id': self.match_result.id},
+            ),
+        )
+
+        self.assertRedirects(
+            response,
+            (
+                f"{reverse('login')}?next="
+                f"{reverse('report_download', kwargs={'match_result_id': self.match_result.id})}"
+            ),
+        )
+
+    @patch('apps.reports.views.HTML')
+    def test_report_download_returns_pdf_for_owned_result(self, mock_html):
+        mock_html.return_value.write_pdf.return_value = b'%PDF-1.4 test pdf'
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse(
+                'report_download',
+                kwargs={'match_result_id': self.match_result.id},
+            ),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertEqual(response.content, b'%PDF-1.4 test pdf')
+        self.assertIn('attachment; filename=', response['Content-Disposition'])
+        rendered_html = mock_html.call_args.kwargs['string']
+        self.assertIn('Owner Resume', rendered_html)
+        self.assertIn('Backend Developer', rendered_html)
+        self.assertIn('82.0%', rendered_html)
+        self.assertIn('88.0%', rendered_html)
+        self.assertIn('Python', rendered_html)
+        self.assertIn('Django', rendered_html)
+        self.assertIn('Add measurable project outcomes.', rendered_html)
+        self.assertIn('How have you used Django in production?', rendered_html)
+
+    def test_report_download_does_not_allow_another_users_result(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse(
+                'report_download',
                 kwargs={'match_result_id': self.other_match_result.id},
             ),
         )
