@@ -22,7 +22,7 @@ def job_create(request):
         messages.success(request, 'Job description saved successfully.')
 
         if request.POST.get('action') == 'analyze':
-            messages.info(request, 'Analysis workflow will be available soon.')
+            return redirect('analyze_form')
 
         return redirect('job_list')
 
@@ -41,7 +41,7 @@ def job_edit(request, id):
         messages.success(request, 'Job description updated successfully.')
 
         if request.POST.get('action') == 'analyze':
-            messages.info(request, 'Analysis workflow will be available soon.')
+            return redirect('analyze_form')
 
         return redirect('job_list')
 
