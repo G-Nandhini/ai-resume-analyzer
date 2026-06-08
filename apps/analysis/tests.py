@@ -202,3 +202,103 @@ class AnalyzeViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+
+class DashboardViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='dashboard-owner',
+            password='S3cure-Passphrase-2026',
+        )
+        self.other_user = User.objects.create_user(
+            username='dashboard-other',
+            password='S3cure-Passphrase-2026',
+        )
+        self.resume = Resume.objects.create(
+            user=self.user,
+            title='Owner Resume',
+            file='resumes/owner.pdf',
+            extracted_text='Skills: Python',
+        )
+        self.second_resume = Resume.objects.create(
+            user=self.user,
+            title='Owner Resume Two',
+            file='resumes/owner-two.pdf',
+            extracted_text='Skills: Django',
+        )
+        self.other_resume = Resume.objects.create(
+            user=self.other_user,
+            title='Other Resume',
+            file='resumes/other.pdf',
+            extracted_text='Skills: Java',
+        )
+        self.job_description = JobDescription.objects.create(
+            user=self.user,
+            job_title='Backend Developer',
+            required_skills='Python, Django',
+            description='Build services.',
+        )
+        self.other_job_description = JobDescription.objects.create(
+            user=self.other_user,
+            job_title='Other Developer',
+            required_skills='Java',
+            description='Build Java services.',
+        )
+        first_analysis = ResumeAnalysis.objects.create(
+            resume=self.resume,
+            resume_score=82,
+        )
+        second_analysis = ResumeAnalysis.objects.create(
+            resume=self.second_resume,
+            resume_score=74,
+        )
+        other_analysis = ResumeAnalysis.objects.create(
+            resume=self.other_resume,
+            resume_score=91,
+        )
+        JDMatchResult.objects.create(
+            resume=self.resume,
+            job_description=self.job_description,
+            resume_analysis=first_analysis,
+            match_score=90,
+        )
+        JDMatchResult.objects.create(
+            resume=self.second_resume,
+            job_description=self.job_description,
+            resume_analysis=second_analysis,
+            match_score=70,
+        )
+        JDMatchResult.objects.create(
+            resume=self.other_resume,
+            job_description=self.other_job_description,
+            resume_analysis=other_analysis,
+            match_score=99,
+        )
+
+    def test_dashboard_requires_login(self):
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertRedirects(
+            response,
+            f"{reverse('login')}?next={reverse('dashboard')}",
+        )
+
+    def test_dashboard_shows_current_user_stats_and_recent_analyses(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'dashboard.html')
+        self.assertEqual(response.context['total_resumes'], 2)
+        self.assertEqual(response.context['total_job_descriptions'], 1)
+        self.assertEqual(response.context['average_match_score'], 80)
+        self.assertEqual(response.context['best_match_score'], 90)
+        self.assertContains(response, 'Resume Name')
+        self.assertContains(response, 'Job Title')
+        self.assertContains(response, 'Owner Resume')
+        self.assertContains(response, 'Backend Developer')
+        self.assertContains(response, '90.0%')
+        self.assertContains(response, '82.0%')
+        self.assertNotContains(response, 'Other Resume')
+        self.assertNotContains(response, '99.0%')

@@ -7,31 +7,47 @@
 {% block content %}
 <div class="row g-4">
     <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card">
+        <div class="app-card h-100">
             <p class="text-muted-soft mb-2">Total Resumes</p>
-            <h3 class="mb-1 fw-bold">12</h3>
-            <span class="badge-success-soft">20% this month</span>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <h3 class="mb-0 fw-bold">{{ total_resumes }}</h3>
+                <span class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-file-earmark-person fs-5"></i>
+                </span>
+            </div>
         </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card">
-            <p class="text-muted-soft mb-2">Total JD Added</p>
-            <h3 class="mb-1 fw-bold">8</h3>
-            <span class="badge-success-soft">14% this month</span>
+        <div class="app-card h-100">
+            <p class="text-muted-soft mb-2">Total Job Descriptions</p>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <h3 class="mb-0 fw-bold">{{ total_job_descriptions }}</h3>
+                <span class="rounded-circle bg-info bg-opacity-10 text-info d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-briefcase fs-5"></i>
+                </span>
+            </div>
         </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card">
+        <div class="app-card h-100">
             <p class="text-muted-soft mb-2">Average Match Score</p>
-            <h3 class="mb-1 fw-bold">72%</h3>
-            <span class="badge-success-soft">10% this month</span>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <h3 class="mb-0 fw-bold">{{ average_match_score|floatformat:1 }}%</h3>
+                <span class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-graph-up-arrow fs-5"></i>
+                </span>
+            </div>
         </div>
     </div>
     <div class="col-12 col-md-6 col-xl-3">
-        <div class="app-card">
+        <div class="app-card h-100">
             <p class="text-muted-soft mb-2">Best Match Score</p>
-            <h3 class="mb-1 fw-bold">92%</h3>
-            <span class="badge-success-soft">15% this month</span>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <h3 class="mb-0 fw-bold">{{ best_match_score|floatformat:1 }}%</h3>
+                <span class="rounded-circle bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-trophy fs-5"></i>
+                </span>
+            </div>
         </div>
     </div>
 </div>
@@ -39,37 +55,61 @@
 <section class="app-card mt-4">
     <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
         <h3 class="section-title mb-0">Recent Resume Analyses</h3>
-        <button class="btn btn-outline-primary btn-sm">View All</button>
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'analyze_form' %}">
+            <i class="bi bi-stars"></i>
+            New Analysis
+        </a>
     </div>
     <div class="table-responsive">
         <table class="table align-middle mb-0">
             <thead>
                 <tr>
-                    <th>Resume</th>
-                    <th>Job Description</th>
+                    <th>Resume Name</th>
+                    <th>Job Title</th>
                     <th>Match Score</th>
                     <th>Resume Score</th>
-                    <th>Analyzed On</th>
+                    <th>Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                {% for analysis in recent_analyses %}
                 <tr>
-                    <td>Nandhini_Resume.pdf</td>
-                    <td>Python Django Developer</td>
-                    <td><span class="badge-success-soft">76%</span></td>
-                    <td><span class="badge-success-soft">82%</span></td>
-                    <td>20 May 2024</td>
-                    <td><button class="btn icon-btn" type="button" aria-label="View"><i class="bi bi-eye"></i></button></td>
+                    <td>{{ analysis.resume.title }}</td>
+                    <td>{{ analysis.job_description.job_title }}</td>
+                    <td>
+                        <span class="{% if analysis.match_score >= 70 %}badge-success-soft{% else %}badge-warning-soft{% endif %}">
+                            {{ analysis.match_score|floatformat:1 }}%
+                        </span>
+                    </td>
+                    <td>
+                        {% if analysis.resume_analysis %}
+                            <span class="{% if analysis.resume_analysis.resume_score >= 70 %}badge-success-soft{% else %}badge-warning-soft{% endif %}">
+                                {{ analysis.resume_analysis.resume_score|floatformat:1 }}%
+                            </span>
+                        {% else %}
+                            <span class="text-muted-soft">Not available</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ analysis.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a class="btn icon-btn" href="{% url 'analysis_result' analysis.id %}" aria-label="View analysis">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
                 </tr>
+                {% empty %}
                 <tr>
-                    <td>Nandhini_Resume.pdf</td>
-                    <td>Backend Developer</td>
-                    <td><span class="badge-warning-soft">68%</span></td>
-                    <td><span class="badge-success-soft">75%</span></td>
-                    <td>18 May 2024</td>
-                    <td><button class="btn icon-btn" type="button" aria-label="View"><i class="bi bi-eye"></i></button></td>
+                    <td colspan="6" class="text-center py-5">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary mb-3" style="width: 52px; height: 52px;">
+                            <i class="bi bi-stars fs-4"></i>
+                        </div>
+                        <p class="fw-semibold mb-1">No analyses yet</p>
+                        <p class="text-muted-soft mb-3">Run your first resume-to-job match to see results here.</p>
+                        <a class="btn btn-primary btn-sm" href="{% url 'analyze_form' %}">Analyze Resume</a>
+                    </td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
