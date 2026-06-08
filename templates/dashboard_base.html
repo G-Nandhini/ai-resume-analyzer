@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-mark">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+            </div>
+            <div>
+                <h1>ResumeIQ</h1>
+                <p>AI Resume Analyzer</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="nav-link active" href="{% url 'dashboard' %}">
+                <i class="bi bi-grid-1x2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>Upload Resume</span>
+            </a>
+            <a class="nav-link" href="{% url 'profile' %}">
+                <i class="bi bi-briefcase"></i>
+                <span>Job Descriptions</span>
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-stars"></i>
+                <span>Analyze Resume</span>
+            </a>
+            <a class="nav-link" href="{% url 'logout' %}">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Reports</span>
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-chat-square-text"></i>
+                <span>Interview Questions</span>
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-person"></i>
+                <span>Profile</span>
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="main-shell">
+        <header class="topbar">
+            <div>
+                <button class="btn icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="Open menu">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+            </div>
+
+            <div class="topbar-actions">
+                <button class="btn icon-btn" type="button" aria-label="Notifications">
+                    <i class="bi bi-bell"></i>
+                </button>
+                <div class="user-chip">
+                    <div class="avatar">N</div>
+                    <div>
+                        <strong>{{ request.user.get_full_name|default:request.user.username|default:"Nandhini" }}</strong>
+                        <span>Premium User</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start mobile-sidebar" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+    <div class="offcanvas-header">
+        <div class="sidebar-brand mb-0">
+            <div class="brand-mark">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+            </div>
+            <div>
+                <h1 id="mobileSidebarLabel">ResumeIQ</h1>
+                <p>AI Resume Analyzer</p>
+            </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <nav class="sidebar-nav">
+            <a class="nav-link active" href="{% url 'dashboard' %}"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-cloud-arrow-up"></i><span>Upload Resume</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-briefcase"></i><span>Job Descriptions</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-stars"></i><span>Analyze Resume</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-file-earmark-text"></i><span>Reports</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
+            <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i><span>Profile</span></a>
+            <a class="nav-link" href="#"><i class="bi bi-gear"></i><span>Settings</span></a>
+            <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+        </nav>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Login | ResumeIQ{% endblock %}
+
+{% block body %}
+<main class="login-shell">
+    <section class="login-intro">
+        <div class="auth-brand">
+            <div class="brand-mark">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+            </div>
+            <div>
+                <h1>ResumeIQ</h1>
+                <p>AI Resume Analyzer</p>
+            </div>
+        </div>
+        <div class="login-copy">
+            <span class="eyebrow">Resume intelligence platform</span>
+            <h2>Analyze resumes, match job descriptions, and prepare smarter interviews.</h2>
+            <p>Track resume uploads, identify missing skills, review match scores, and create reports from one focused dashboard.</p>
+        </div>
+    </section>
+
+    <section class="login-form-panel">
+        <div class="auth-card login-card">
+            <div class="mb-4">
+                <h2 class="auth-title">Welcome back</h2>
+                <p class="auth-subtitle">Log in to continue to your dashboard.</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <button class="btn btn-primary w-100" type="submit">Login</button>
+            </form>
+
+            <p class="auth-switch">
+                New to ResumeIQ?
+                <a href="{% url 'register' %}">Create account</a>
+            </p>
+        </div>
+    </section>
+</main>
+{% endblock %}

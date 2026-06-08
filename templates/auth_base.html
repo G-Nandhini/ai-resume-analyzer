@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="auth-shell">
+    <section class="auth-panel">
+        <div class="auth-brand mb-4">
+            <div class="brand-mark">
+                <i class="bi bi-file-earmark-person"></i>
+            </div>
+            <div>
+                <h1>ResumeIQ</h1>
+                <p>AI Resume Analyzer</p>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            {% block auth_content %}{% endblock %}
+        </div>
+    </section>
+</main>
+{% endblock %}

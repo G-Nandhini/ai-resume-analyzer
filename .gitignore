@@ -1,0 +1,10 @@
+env/
+__pycache__/
+*.pyc
+.env
+.docx
+.png
+db.sqlite3
+media/
+staticfiles/
+
