@@ -7,6 +7,11 @@ from apps.jobs.models import JobDescription
 from apps.resumes.models import Resume
 
 from .forms import AnalyzeForm
+from .ai_service import (
+    AIServiceNotConfigured,
+    AIServiceRequestError,
+    generate_ai_resume_insights,
+)
 from .models import InterviewQuestion, JDMatchResult
 from .services import analyze_resume_against_jd, generate_basic_interview_questions
 
@@ -81,6 +86,58 @@ def analysis_result(request, match_result_id):
     )
 
     return render(request, 'analysis/analysis_result.html', {'match_result': match_result})
+
+
+@login_required
+def generate_ai_insights(request, match_result_id):
+    match_result = get_object_or_404(
+        JDMatchResult.objects.select_related(
+            'resume',
+            'job_description',
+            'resume_analysis',
+        ),
+        id=match_result_id,
+        resume__user=request.user,
+        job_description__user=request.user,
+    )
+
+    if request.method != 'POST':
+        return redirect('analysis_result', match_result_id=match_result.id)
+
+    if not match_result.resume_analysis:
+        messages.warning(request, 'Resume analysis details are not available.')
+        return redirect('analysis_result', match_result_id=match_result.id)
+
+    try:
+        job_description = match_result.job_description
+        job_description_text = '\n'.join([
+            line
+            for label, value in (
+                ('Job Title', job_description.job_title),
+                ('Company', job_description.company_name),
+                ('Experience Required', job_description.experience_required),
+                ('Required Skills', job_description.required_skills),
+                ('Description', job_description.description),
+            )
+            if value
+            for line in (f'{label}: {value}',)
+        ])
+        ai_insights = generate_ai_resume_insights(
+            match_result.resume.extracted_text,
+            job_description_text,
+        )
+    except AIServiceNotConfigured:
+        messages.warning(request, 'AI is not configured yet.')
+    except AIServiceRequestError as exc:
+        messages.error(request, exc.message)
+    except Exception:
+        messages.error(request, 'AI insights could not be generated right now.')
+    else:
+        match_result.resume_analysis.ai_insights = ai_insights
+        match_result.resume_analysis.save(update_fields=['ai_insights'])
+        messages.success(request, 'AI insights generated successfully.')
+
+    return redirect('analysis_result', match_result_id=match_result.id)
 
 
 @login_required

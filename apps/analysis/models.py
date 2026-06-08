@@ -14,6 +14,7 @@ class ResumeAnalysis(models.Model):
     skills_found = models.JSONField(default=list)
     missing_sections = models.JSONField(default=list)
     suggestions = models.JSONField(default=list)
+    ai_insights = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
