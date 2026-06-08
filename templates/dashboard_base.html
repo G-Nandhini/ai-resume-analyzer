@@ -34,6 +34,10 @@
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Reports</span>
             </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}">
+                <i class="bi bi-bell"></i>
+                <span>Notifications</span>
+            </a>
             <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}">
                 <i class="bi bi-chat-square-text"></i>
                 <span>Interview Questions</span>
@@ -63,9 +67,43 @@
             </div>
 
             <div class="topbar-actions">
-                <button class="btn icon-btn" type="button" aria-label="Notifications">
-                    <i class="bi bi-bell"></i>
-                </button>
+                <div class="dropdown notification-dropdown">
+                    <button class="btn icon-btn position-relative" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="Notifications">
+                        <i class="bi bi-bell"></i>
+                        {% if unread_notification_count %}
+                            <span class="notification-count">{{ unread_notification_count }}</span>
+                        {% endif %}
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end notification-menu">
+                        <div class="notification-menu-header">
+                            <strong>Notifications</strong>
+                            {% if unread_notification_count %}
+                                <a href="{% url 'notifications_read_all' %}?next={{ request.get_full_path|urlencode }}">Mark all as read</a>
+                            {% endif %}
+                        </div>
+                        {% if latest_notifications %}
+                            <div class="notification-preview-list">
+                                {% for notification in latest_notifications %}
+                                    <div class="notification-preview {% if not notification.is_read %}notification-unread{% endif %}">
+                                        <div>
+                                            <strong>{{ notification.title }}</strong>
+                                            <p>{{ notification.message }}</p>
+                                            <span>{{ notification.created_at|timesince }} ago</span>
+                                        </div>
+                                        {% if not notification.is_read %}
+                                            <a class="notification-read-link" href="{% url 'notification_read' notification.id %}?next={{ request.get_full_path|urlencode }}" aria-label="Mark notification as read">
+                                                <i class="bi bi-check2"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <a class="notification-view-all" href="{% url 'notifications' %}">View all notifications</a>
+                        {% else %}
+                            <div class="notification-empty">No notifications yet.</div>
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="user-chip">
                     <div class="avatar">N</div>
                     <div>
@@ -111,6 +149,7 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'job_list' or request.resolver_match.url_name == 'job_create' or request.resolver_match.url_name == 'job_edit' or request.resolver_match.url_name == 'job_delete' %}active{% endif %}" href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i><span>Job Descriptions</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'analyze_form' or request.resolver_match.url_name == 'analysis_result' %}active{% endif %}" href="{% url 'analyze_form' %}"><i class="bi bi-stars"></i><span>Analyze Resume</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'report_list' or request.resolver_match.url_name == 'report_detail' %}active{% endif %}" href="{% url 'report_list' %}"><i class="bi bi-file-earmark-text"></i><span>Reports</span></a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><i class="bi bi-bell"></i><span>Notifications</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
             <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i><span>Profile</span></a>
             <a class="nav-link" href="#"><i class="bi bi-gear"></i><span>Settings</span></a>

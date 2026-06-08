@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from weasyprint import HTML
 
 from apps.analysis.models import JDMatchResult
+from apps.notifications.helpers import create_notification
 
 
 @login_required
@@ -73,4 +74,9 @@ def report_download(request, match_result_id):
 
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
+    create_notification(
+        request.user,
+        'PDF report downloaded',
+        f'The report for {match_result.resume.title} was downloaded.',
+    )
     return response

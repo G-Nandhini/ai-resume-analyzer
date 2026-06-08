@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
+from apps.notifications.helpers import create_notification
+
 from .forms import ResumeForm
 from .models import Resume
 from .services import ResumeTextExtractionError, extract_resume_text
@@ -20,6 +22,11 @@ def resume_upload(request):
         resume = form.save(commit=False)
         resume.user = request.user
         resume.save()
+        create_notification(
+            request.user,
+            'Resume uploaded',
+            f'{resume.title} has been uploaded successfully.',
+        )
 
         try:
             resume.extracted_text = extract_resume_text(resume)

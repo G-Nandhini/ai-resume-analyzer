@@ -4,6 +4,7 @@ from django.db.models import Avg, Max
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.jobs.models import JobDescription
+from apps.notifications.helpers import create_notification
 from apps.resumes.models import Resume
 
 from .forms import AnalyzeForm
@@ -65,6 +66,14 @@ def analyze_form(request):
         match_result = analyze_resume_against_jd(
             form.cleaned_data['resume'],
             form.cleaned_data['job_description'],
+        )
+        create_notification(
+            request.user,
+            'Resume analysis completed',
+            (
+                f'{match_result.resume.title} was analyzed for '
+                f'{match_result.job_description.job_title}.'
+            ),
         )
         messages.success(request, 'Resume analysis completed successfully.')
         return redirect('analysis_result', match_result_id=match_result.id)
@@ -135,6 +144,11 @@ def generate_ai_insights(request, match_result_id):
     else:
         match_result.resume_analysis.ai_insights = ai_insights
         match_result.resume_analysis.save(update_fields=['ai_insights'])
+        create_notification(
+            request.user,
+            'AI insights generated',
+            f'AI insights are ready for {match_result.resume.title}.',
+        )
         messages.success(request, 'AI insights generated successfully.')
 
     return redirect('analysis_result', match_result_id=match_result.id)

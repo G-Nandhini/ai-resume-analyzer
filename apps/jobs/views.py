@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
+from apps.notifications.helpers import create_notification
+
 from .forms import JobDescriptionForm
 from .models import JobDescription
 
@@ -19,6 +21,11 @@ def job_create(request):
         job = form.save(commit=False)
         job.user = request.user
         job.save()
+        create_notification(
+            request.user,
+            'Job description created',
+            f'{job.job_title} has been added to your job descriptions.',
+        )
         messages.success(request, 'Job description saved successfully.')
 
         if request.POST.get('action') == 'analyze':

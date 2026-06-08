@@ -1,0 +1,51 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Notifications | ResumeIQ{% endblock %}
+
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<section class="app-card">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h3 class="section-title mb-1">Notifications</h3>
+            <p class="text-muted-soft mb-0">Recent updates from your resume workflow.</p>
+        </div>
+        {% if notifications %}
+            <a class="btn btn-outline-secondary" href="{% url 'notifications_read_all' %}">
+                <i class="bi bi-check2-all me-2"></i>Mark all as read
+            </a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+        <div class="list-group list-group-flush">
+            {% for notification in notifications %}
+                <div class="list-group-item px-0 py-3 d-flex flex-column flex-lg-row align-items-lg-start justify-content-between gap-3 {% if not notification.is_read %}notification-unread{% endif %}">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h4 class="notification-title mb-0">{{ notification.title }}</h4>
+                            {% if not notification.is_read %}
+                                <span class="badge-success-soft">New</span>
+                            {% endif %}
+                        </div>
+                        <p class="mb-1">{{ notification.message }}</p>
+                        <span class="text-muted-soft small">{{ notification.created_at|timesince }} ago</span>
+                    </div>
+                    {% if not notification.is_read %}
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'notification_read' notification.id %}">
+                            <i class="bi bi-check2 me-1"></i>Mark as read
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-bell"></i>
+            <h4>No notifications yet</h4>
+            <p>Your resume, job, analysis, insight, and report activity will appear here.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
