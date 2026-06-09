@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from docx import Document
@@ -207,6 +207,27 @@ class ResumeViewTests(TestCase):
         resume = Resume.objects.get(title='Uploaded Resume')
         self.assertEqual(resume.user, self.user)
         self.assertEqual(resume.extracted_text, 'Extracted candidate text')
+        self.assertRedirects(response, reverse('resume_detail', kwargs={'id': resume.id}))
+
+    @patch('apps.resumes.views.extract_resume_text')
+    def test_upload_accepts_csrf_protected_post(self, mock_extract_resume_text):
+        mock_extract_resume_text.return_value = 'Extracted candidate text'
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.user)
+
+        get_response = csrf_client.get(reverse('resume_upload'))
+        csrf_token = csrf_client.cookies['csrftoken'].value
+
+        self.assertEqual(get_response.status_code, 200)
+        self.assertIn('no-cache', get_response.headers['Cache-Control'])
+
+        response = csrf_client.post(reverse('resume_upload'), {
+            'csrfmiddlewaretoken': csrf_token,
+            'title': 'CSRF Protected Resume',
+            'file': SimpleUploadedFile('resume.pdf', b'%PDF-1.4'),
+        })
+
+        resume = Resume.objects.get(title='CSRF Protected Resume')
         self.assertRedirects(response, reverse('resume_detail', kwargs={'id': resume.id}))
 
     @patch('apps.resumes.views.extract_resume_text')

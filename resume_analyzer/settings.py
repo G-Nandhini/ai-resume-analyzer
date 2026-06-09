@@ -23,7 +23,10 @@ load_dotenv(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-only-change-me')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'resumeiq-dev-fallback-secret-key-change-in-production-2026',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
@@ -32,6 +35,32 @@ ALLOWED_HOSTS = os.getenv(
     'ALLOWED_HOSTS',
     'localhost,127.0.0.1,testserver',
 ).split(',')
+
+SECURE_SSL_REDIRECT = os.getenv(
+    'SECURE_SSL_REDIRECT',
+    str(not DEBUG),
+) == 'True'
+SESSION_COOKIE_SECURE = os.getenv(
+    'SESSION_COOKIE_SECURE',
+    str(not DEBUG),
+) == 'True'
+CSRF_COOKIE_SECURE = os.getenv(
+    'CSRF_COOKIE_SECURE',
+    str(not DEBUG),
+) == 'True'
+CSRF_FAILURE_VIEW = 'apps.resumes.views.csrf_failure'
+SECURE_HSTS_SECONDS = int(os.getenv(
+    'SECURE_HSTS_SECONDS',
+    '31536000' if not DEBUG else '0',
+))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv(
+    'SECURE_HSTS_INCLUDE_SUBDOMAINS',
+    str(not DEBUG),
+) == 'True'
+SECURE_HSTS_PRELOAD = os.getenv(
+    'SECURE_HSTS_PRELOAD',
+    str(not DEBUG),
+) == 'True'
 
 
 # Application definition
@@ -55,6 +84,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'resume_analyzer.middleware.SameOriginCsrfHeaderMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -122,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

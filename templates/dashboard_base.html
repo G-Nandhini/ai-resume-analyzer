@@ -46,7 +46,7 @@
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
             </a>
-            <a class="nav-link" href="{% url 'logout' %}">
+            <a class="nav-link" href="{% url 'logout' %}" data-confirm data-confirm-title="Logout" data-confirm-message="Are you sure you want to logout?" data-confirm-button-text="Logout" data-confirm-button-class="btn-primary">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Logout</span>
             </a>
@@ -104,7 +104,7 @@
                     </div>
                 </div>
                 <div class="user-chip">
-                    <div class="avatar">N</div>
+                    <div class="avatar">{{ request.user.first_name|default:request.user.username|slice:":1"|upper|default:"U" }}</div>
                     <div>
                         <strong>{{ request.user.get_full_name|default:request.user.username|default:"Nandhini" }}</strong>
                         <span>Premium User</span>
@@ -117,8 +117,9 @@
             {% if messages %}
                 <div class="mb-4">
                     {% for message in messages %}
-                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags|default:'info' }}{% endif %} mb-2" role="alert">
+                        <div class="alert alert-dismissible fade show {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags|default:'info' }}{% endif %} mb-2" role="alert">
                             {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 </div>
@@ -151,7 +152,7 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><i class="bi bi-bell"></i><span>Notifications</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
             <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i><span>Profile</span></a>
-            <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+            <a class="nav-link" href="{% url 'logout' %}" data-confirm data-confirm-title="Logout" data-confirm-message="Are you sure you want to logout?" data-confirm-button-text="Logout" data-confirm-button-class="btn-primary"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
         </nav>
     </div>
 </div>

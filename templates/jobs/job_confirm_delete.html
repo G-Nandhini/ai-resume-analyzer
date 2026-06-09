@@ -26,10 +26,13 @@
                 </div>
             </dl>
 
-            <form method="post">
+            <form method="post" data-loading-text="Deleting...">
                 {% csrf_token %}
                 <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-danger" type="submit">Delete JD</button>
+                    <button class="btn btn-danger" type="submit" data-loading-text="Deleting...">
+                        <i class="bi bi-trash"></i>
+                        Delete JD
+                    </button>
                     <a class="btn btn-outline-secondary" href="{% url 'job_list' %}">Cancel</a>
                 </div>
             </form>

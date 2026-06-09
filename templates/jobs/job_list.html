@@ -44,7 +44,7 @@
                                 <a class="btn icon-btn" href="{% url 'job_edit' job.id %}" aria-label="Edit job description">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a class="btn icon-btn ms-1" href="{% url 'job_delete' job.id %}" aria-label="Delete job description">
+                                <a class="btn icon-btn ms-1" href="{% url 'job_delete' job.id %}" aria-label="Delete job description" data-confirm data-confirm-message="Review and delete this job description?" data-confirm-button-text="Continue" data-confirm-button-class="btn-danger">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>

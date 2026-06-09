@@ -11,7 +11,7 @@
             <h3 class="section-title">Upload Resume</h3>
             <p class="text-muted-soft mb-4">Supported formats: PDF and DOCX. Max file size: 5MB.</p>
 
-            <form method="post" enctype="multipart/form-data" novalidate>
+            <form id="resume-upload-form" method="post" action="{% url 'resume_upload' %}" enctype="multipart/form-data" novalidate data-show-loading="true" data-loading-text="Uploading..." data-loading-message="Uploading and reading your resume...">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -20,7 +20,17 @@
 
                 <div class="mb-3">
                     <label class="form-label" for="{{ form.title.id_for_label }}">Resume Title</label>
-                    {{ form.title }}
+                    <input
+                        class="form-control"
+                        form="resume-upload-form"
+                        id="{{ form.title.id_for_label }}"
+                        maxlength="255"
+                        name="title"
+                        placeholder="e.g. Nandhini Resume"
+                        required
+                        type="text"
+                        value="{{ form.title.value|default_if_none:'' }}"
+                    >
                     {% for error in form.title.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
                 </div>
 
@@ -28,12 +38,23 @@
                     <i class="bi bi-cloud-arrow-up"></i>
                     <strong>Drag and drop your resume here</strong>
                     <span>or click to choose a PDF/DOCX file</span>
-                    {{ form.file }}
+                    <input
+                        accept=".pdf,.docx"
+                        class="form-control"
+                        form="resume-upload-form"
+                        id="{{ form.file.id_for_label }}"
+                        name="file"
+                        required
+                        type="file"
+                    >
                 </label>
                 {% for error in form.file.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <button class="btn btn-primary" type="submit">Upload Resume</button>
+                    <button class="btn btn-primary" form="resume-upload-form" type="submit" data-loading-text="Uploading...">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        Upload Resume
+                    </button>
                     <a class="btn btn-outline-secondary" href="{% url 'resume_list' %}">Cancel</a>
                 </div>
             </form>
@@ -52,4 +73,55 @@
         </section>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        var form = document.getElementById('resume-upload-form');
+        var titleInput = document.getElementById('{{ form.title.id_for_label }}');
+        var fileInput = document.getElementById('{{ form.file.id_for_label }}');
+        var csrfInput = form && form.querySelector('input[name="csrfmiddlewaretoken"]');
+
+        if (!form || !titleInput || !fileInput || !csrfInput) {
+            return;
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (!titleInput.value.trim() || !fileInput.files.length) {
+                form.reportValidity();
+                return;
+            }
+
+            var data = new FormData();
+            data.append('csrfmiddlewaretoken', csrfInput.value);
+            data.append('title', titleInput.value);
+            data.append('file', fileInput.files[0], fileInput.files[0].name);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: data,
+                credentials: 'same-origin',
+                headers: {'X-CSRFToken': csrfInput.value},
+            }).then(function (response) {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return null;
+                }
+                return response.text();
+            }).then(function (html) {
+                if (html !== null) {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }
+            }).catch(function () {
+                form.submit();
+            });
+        }, true);
+    })();
+</script>
 {% endblock %}

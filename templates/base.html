@@ -24,6 +24,31 @@
 <body>
     {% block body %}{% endblock %}
 
+    <div class="app-loading-overlay" data-loading-overlay aria-hidden="true">
+        <div class="app-loading-card" role="status" aria-live="polite">
+            <span class="app-spinner"></span>
+            <span data-loading-message>Working on it...</span>
+        </div>
+    </div>
+
+    <div class="modal fade app-confirm-modal" id="appConfirmModal" tabindex="-1" aria-labelledby="appConfirmModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="appConfirmModalTitle" data-confirm-title>Confirm action</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0" data-confirm-message>This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger" href="#" data-confirm-action>Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (function () {
@@ -71,6 +96,7 @@
             });
         })();
     </script>
+    <script src="{% static 'js/app.js' %}?v=20260609-confirm-scope"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
