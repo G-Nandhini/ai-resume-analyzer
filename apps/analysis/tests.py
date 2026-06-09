@@ -321,26 +321,35 @@ class AnalyzeViewTests(TestCase):
             ),
         )
 
-    def test_latest_interview_questions_redirects_to_latest_owned_result(self):
+    def test_interview_question_list_shows_only_owned_results(self):
         result = analyze_resume_against_jd(self.resume, self.job_description)
-        self.client.force_login(self.user)
-
-        response = self.client.get(reverse('latest_interview_questions'))
-
-        self.assertRedirects(
-            response,
-            reverse('interview_questions', kwargs={'match_result_id': result.id}),
-            fetch_redirect_response=False,
+        other_result = analyze_resume_against_jd(
+            self.other_resume,
+            self.other_job_description,
         )
-
-    def test_latest_interview_questions_redirects_without_results(self):
         self.client.force_login(self.user)
 
-        response = self.client.get(reverse('latest_interview_questions'))
+        response = self.client.get(reverse('interview_question_list'))
 
-        self.assertRedirects(response, reverse('analyze_form'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'analysis/interview_question_list.html')
+        self.assertContains(response, result.resume.title)
+        self.assertContains(response, result.job_description.job_title)
+        self.assertNotContains(response, other_result.resume.title)
+        self.assertNotContains(response, other_result.job_description.job_title)
 
-    def test_interview_questions_page_generates_and_shows_owned_questions(self):
+    def test_interview_question_list_empty_state(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse('interview_question_list'))
+
+        self.assertContains(
+            response,
+            'No interview questions available yet. Analyze a resume first.',
+        )
+        self.assertContains(response, 'Analyze Resume')
+
+    def test_interview_questions_page_shows_generate_button_without_questions(self):
         result = analyze_resume_against_jd(self.resume, self.job_description)
         self.client.force_login(self.user)
 
@@ -350,10 +359,38 @@ class AnalyzeViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'analysis/interview_questions.html')
+        self.assertContains(response, 'Generate Questions')
+        self.assertEqual(result.interview_questions.count(), 0)
+
+    def test_generate_interview_questions_creates_and_redirects(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse('generate_interview_questions', kwargs={'match_result_id': result.id}),
+        )
+
+        self.assertRedirects(
+            response,
+            reverse('interview_questions', kwargs={'match_result_id': result.id}),
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(result.interview_questions.count(), 15)
+
+    def test_interview_questions_page_shows_existing_owned_questions(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        generate_basic_interview_questions(result)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse('interview_questions', kwargs={'match_result_id': result.id}),
+        )
+
         self.assertContains(response, 'HR Questions')
         self.assertContains(response, 'Technical Questions')
         self.assertContains(response, 'Project Based Questions')
         self.assertEqual(result.interview_questions.count(), 15)
+        self.assertNotContains(response, 'Generate Questions')
 
     def test_interview_questions_does_not_show_another_users_result(self):
         result = analyze_resume_against_jd(self.resume, self.job_description)
@@ -364,6 +401,17 @@ class AnalyzeViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_generate_interview_questions_does_not_use_another_users_result(self):
+        result = analyze_resume_against_jd(self.resume, self.job_description)
+        self.client.force_login(self.other_user)
+
+        response = self.client.post(
+            reverse('generate_interview_questions', kwargs={'match_result_id': result.id}),
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(result.interview_questions.count(), 0)
 
 
 class DashboardViewTests(TestCase):

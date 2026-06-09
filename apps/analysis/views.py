@@ -167,20 +167,19 @@ def generate_ai_insights(request, match_result_id):
 
 
 @login_required
-def latest_interview_questions(request):
-    match_result = JDMatchResult.objects.filter(
+def interview_question_list(request):
+    match_results = JDMatchResult.objects.filter(
         resume__user=request.user,
-        job_description__user=request.user,
-    ).first()
+    ).select_related(
+        'resume',
+        'job_description',
+    )
 
-    if not match_result:
-        messages.info(
-            request,
-            'Analyze a resume against a job description to generate interview questions.',
-        )
-        return redirect('analyze_form')
-
-    return redirect('interview_questions', match_result_id=match_result.id)
+    return render(
+        request,
+        'analysis/interview_question_list.html',
+        {'match_results': match_results},
+    )
 
 
 @login_required
@@ -192,12 +191,12 @@ def interview_questions(request, match_result_id):
         ),
         id=match_result_id,
         resume__user=request.user,
-        job_description__user=request.user,
     )
-    questions = generate_basic_interview_questions(match_result)
+    questions = match_result.interview_questions.all()
 
     context = {
         'match_result': match_result,
+        'has_questions': questions.exists(),
         'hr_questions': questions.filter(question_type=InterviewQuestion.HR),
         'technical_questions': questions.filter(
             question_type=InterviewQuestion.TECHNICAL,
@@ -207,3 +206,26 @@ def interview_questions(request, match_result_id):
         ),
     }
     return render(request, 'analysis/interview_questions.html', context)
+
+
+@login_required
+def generate_interview_questions(request, match_result_id):
+    match_result = get_object_or_404(
+        JDMatchResult.objects.select_related(
+            'resume',
+            'job_description',
+        ),
+        id=match_result_id,
+        resume__user=request.user,
+    )
+
+    if request.method != 'POST':
+        return redirect('interview_questions', match_result_id=match_result.id)
+
+    if match_result.interview_questions.exists():
+        messages.info(request, 'Interview questions already exist for this analysis.')
+    else:
+        generate_basic_interview_questions(match_result)
+        messages.success(request, 'Interview questions generated successfully.')
+
+    return redirect('interview_questions', match_result_id=match_result.id)

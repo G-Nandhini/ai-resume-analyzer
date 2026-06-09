@@ -14,62 +14,84 @@
                 at {{ match_result.job_description.company_name }}
             {% endif %}
         </p>
+        <span class="{% if match_result.match_score >= 70 %}badge-success-soft{% else %}badge-warning-soft{% endif %} mt-2 d-inline-block">
+            Match Score: {{ match_result.match_score|floatformat:1 }}%
+        </span>
     </div>
-    <a class="btn btn-outline-secondary" href="{% url 'analysis_result' match_result.id %}">
-        <i class="bi bi-arrow-left"></i>
-        Back to Analysis
-    </a>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary" href="{% url 'interview_question_list' %}">
+            <i class="bi bi-arrow-left"></i>
+            Back to List
+        </a>
+        <a class="btn btn-outline-secondary" href="{% url 'analysis_result' match_result.id %}">
+            <i class="bi bi-bar-chart"></i>
+            Back to Analysis
+        </a>
+    </div>
 </div>
 
 <section class="app-card">
-    <ul class="nav nav-tabs mb-4" id="interviewQuestionTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="hr-tab" data-bs-toggle="tab" data-bs-target="#hr-tab-pane" type="button" role="tab" aria-controls="hr-tab-pane" aria-selected="true">
-                HR Questions
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="technical-tab" data-bs-toggle="tab" data-bs-target="#technical-tab-pane" type="button" role="tab" aria-controls="technical-tab-pane" aria-selected="false">
-                Technical Questions
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="project-tab" data-bs-toggle="tab" data-bs-target="#project-tab-pane" type="button" role="tab" aria-controls="project-tab-pane" aria-selected="false">
-                Project Based Questions
-            </button>
-        </li>
-    </ul>
+    {% if has_questions %}
+        <ul class="nav nav-tabs mb-4" id="interviewQuestionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="hr-tab" data-bs-toggle="tab" data-bs-target="#hr-tab-pane" type="button" role="tab" aria-controls="hr-tab-pane" aria-selected="true">
+                    HR Questions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="technical-tab" data-bs-toggle="tab" data-bs-target="#technical-tab-pane" type="button" role="tab" aria-controls="technical-tab-pane" aria-selected="false">
+                    Technical Questions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="project-tab" data-bs-toggle="tab" data-bs-target="#project-tab-pane" type="button" role="tab" aria-controls="project-tab-pane" aria-selected="false">
+                    Project Based Questions
+                </button>
+            </li>
+        </ul>
 
-    <div class="tab-content" id="interviewQuestionTabsContent">
-        <div class="tab-pane fade show active" id="hr-tab-pane" role="tabpanel" aria-labelledby="hr-tab" tabindex="0">
-            <ol class="list-group list-group-numbered list-group-flush">
-                {% for question in hr_questions %}
-                    <li class="list-group-item px-0">{{ question.question }}</li>
-                {% empty %}
-                    <li class="list-group-item px-0 text-muted-soft">No HR questions available.</li>
-                {% endfor %}
-            </ol>
-        </div>
+        <div class="tab-content" id="interviewQuestionTabsContent">
+            <div class="tab-pane fade show active" id="hr-tab-pane" role="tabpanel" aria-labelledby="hr-tab" tabindex="0">
+                <ol class="list-group list-group-numbered list-group-flush">
+                    {% for question in hr_questions %}
+                        <li class="list-group-item px-0">{{ question.question }}</li>
+                    {% empty %}
+                        <li class="list-group-item px-0 text-muted-soft">No HR questions available.</li>
+                    {% endfor %}
+                </ol>
+            </div>
 
-        <div class="tab-pane fade" id="technical-tab-pane" role="tabpanel" aria-labelledby="technical-tab" tabindex="0">
-            <ol class="list-group list-group-numbered list-group-flush">
-                {% for question in technical_questions %}
-                    <li class="list-group-item px-0">{{ question.question }}</li>
-                {% empty %}
-                    <li class="list-group-item px-0 text-muted-soft">No technical questions available.</li>
-                {% endfor %}
-            </ol>
-        </div>
+            <div class="tab-pane fade" id="technical-tab-pane" role="tabpanel" aria-labelledby="technical-tab" tabindex="0">
+                <ol class="list-group list-group-numbered list-group-flush">
+                    {% for question in technical_questions %}
+                        <li class="list-group-item px-0">{{ question.question }}</li>
+                    {% empty %}
+                        <li class="list-group-item px-0 text-muted-soft">No technical questions available.</li>
+                    {% endfor %}
+                </ol>
+            </div>
 
-        <div class="tab-pane fade" id="project-tab-pane" role="tabpanel" aria-labelledby="project-tab" tabindex="0">
-            <ol class="list-group list-group-numbered list-group-flush">
-                {% for question in project_based_questions %}
-                    <li class="list-group-item px-0">{{ question.question }}</li>
-                {% empty %}
-                    <li class="list-group-item px-0 text-muted-soft">No project based questions available.</li>
-                {% endfor %}
-            </ol>
+            <div class="tab-pane fade" id="project-tab-pane" role="tabpanel" aria-labelledby="project-tab" tabindex="0">
+                <ol class="list-group list-group-numbered list-group-flush">
+                    {% for question in project_based_questions %}
+                        <li class="list-group-item px-0">{{ question.question }}</li>
+                    {% empty %}
+                        <li class="list-group-item px-0 text-muted-soft">No project based questions available.</li>
+                    {% endfor %}
+                </ol>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-chat-square-text"></i>
+            <h4>No questions generated yet</h4>
+            <form method="post" action="{% url 'generate_interview_questions' match_result.id %}" data-show-loading="true" data-loading-text="Generating..." data-loading-message="Generating interview questions...">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit" data-loading-text="Generating...">
+                    <i class="bi bi-magic me-2"></i>Generate Questions
+                </button>
+            </form>
+        </div>
+    {% endif %}
 </section>
 {% endblock %}

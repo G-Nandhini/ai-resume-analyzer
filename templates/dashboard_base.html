@@ -38,7 +38,7 @@
                 <i class="bi bi-bell"></i>
                 <span>Notifications</span>
             </a>
-            <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interview_question_list' or request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'generate_interview_questions' %}active{% endif %}" href="{% url 'interview_question_list' %}">
                 <i class="bi bi-chat-square-text"></i>
                 <span>Interview Questions</span>
             </a>
@@ -150,7 +150,7 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'analyze_form' or request.resolver_match.url_name == 'analysis_result' %}active{% endif %}" href="{% url 'analyze_form' %}"><i class="bi bi-stars"></i><span>Analyze Resume</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'report_list' or request.resolver_match.url_name == 'report_detail' %}active{% endif %}" href="{% url 'report_list' %}"><i class="bi bi-file-earmark-text"></i><span>Reports</span></a>
             <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><i class="bi bi-bell"></i><span>Notifications</span></a>
-            <a class="nav-link {% if request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'latest_interview_questions' %}active{% endif %}" href="{% url 'latest_interview_questions' %}"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'interview_question_list' or request.resolver_match.url_name == 'interview_questions' or request.resolver_match.url_name == 'generate_interview_questions' %}active{% endif %}" href="{% url 'interview_question_list' %}"><i class="bi bi-chat-square-text"></i><span>Interview Questions</span></a>
             <a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i><span>Profile</span></a>
             <a class="nav-link" href="{% url 'logout' %}" data-confirm data-confirm-title="Logout" data-confirm-message="Are you sure you want to logout?" data-confirm-button-text="Logout" data-confirm-button-class="btn-primary"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
         </nav>
