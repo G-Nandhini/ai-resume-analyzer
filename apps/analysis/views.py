@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Max
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
 from apps.jobs.models import JobDescription
 from apps.notifications.helpers import create_notification
@@ -63,6 +65,9 @@ def dashboard(request):
 
 
 @login_required
+@never_cache
+@csrf_protect
+@ensure_csrf_cookie
 def analyze_form(request):
     form = AnalyzeForm(request.POST or None, user=request.user)
 
@@ -81,6 +86,9 @@ def analyze_form(request):
         )
         messages.success(request, 'Resume analysis completed successfully.')
         return redirect('analysis_result', match_result_id=match_result.id)
+    if request.method == 'POST':
+        print('Invalid analyze POST keys:', list(request.POST.keys()))
+        messages.error(request, 'Please select both a resume and a job description.')
 
     return render(request, 'analysis/analyze_form.html', {'form': form})
 

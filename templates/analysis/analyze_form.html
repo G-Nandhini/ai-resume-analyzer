@@ -11,7 +11,7 @@
             <h3 class="section-title">Analyze Resume</h3>
             <p class="text-muted-soft mb-4">Choose a resume and job description to compare.</p>
 
-            <form method="post" novalidate>
+            <form id="analyze-resume-form" method="post" action="{% url 'analyze_form' %}" novalidate data-show-loading="true" data-loading-text="Analyzing..." data-loading-message="Comparing resume and job description...">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -20,21 +20,85 @@
 
                 <div class="mb-3">
                     <label class="form-label" for="{{ form.resume.id_for_label }}">Select Resume</label>
-                    {{ form.resume }}
+                    <select class="form-select" form="analyze-resume-form" id="{{ form.resume.id_for_label }}" name="resume" required>
+                        <option value="">Select resume</option>
+                        {% for resume in form.fields.resume.queryset %}
+                            <option value="{{ resume.id }}" {% if form.resume.value|stringformat:"s" == resume.id|stringformat:"s" %}selected{% endif %}>{{ resume.title }}</option>
+                        {% endfor %}
+                    </select>
                     {% for error in form.resume.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label" for="{{ form.job_description.id_for_label }}">Select Job Description</label>
-                    {{ form.job_description }}
+                    <select class="form-select" form="analyze-resume-form" id="{{ form.job_description.id_for_label }}" name="job_description" required>
+                        <option value="">Select job description</option>
+                        {% for job_description in form.fields.job_description.queryset %}
+                            <option value="{{ job_description.id }}" {% if form.job_description.value|stringformat:"s" == job_description.id|stringformat:"s" %}selected{% endif %}>{{ job_description.job_title }}</option>
+                        {% endfor %}
+                    </select>
                     {% for error in form.job_description.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <button class="btn btn-primary" type="submit">Analyze</button>
+                    <button class="btn btn-primary" form="analyze-resume-form" type="submit" data-loading-text="Analyzing...">
+                        <i class="bi bi-stars"></i>
+                        Analyze
+                    </button>
                 </div>
             </form>
         </section>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        var form = document.getElementById('analyze-resume-form');
+        var resumeSelect = document.getElementById('{{ form.resume.id_for_label }}');
+        var jobSelect = document.getElementById('{{ form.job_description.id_for_label }}');
+        var csrfInput = form && form.querySelector('input[name="csrfmiddlewaretoken"]');
+
+        if (!form || !resumeSelect || !jobSelect || !csrfInput) {
+            return;
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (!resumeSelect.value || !jobSelect.value) {
+                form.reportValidity();
+                return;
+            }
+
+            var data = new FormData();
+            data.append('csrfmiddlewaretoken', csrfInput.value);
+            data.append('resume', resumeSelect.value);
+            data.append('job_description', jobSelect.value);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: data,
+                credentials: 'same-origin',
+                headers: {'X-CSRFToken': csrfInput.value},
+            }).then(function (response) {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return null;
+                }
+                return response.text();
+            }).then(function (html) {
+                if (html !== null) {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }
+            }).catch(function () {
+                form.submit();
+            });
+        }, true);
+    })();
+</script>
 {% endblock %}

@@ -30,11 +30,14 @@
 
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                    <div class="alert alert-dismissible fade show {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags|default:'info' }}{% endif %}">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 {% endfor %}
             {% endif %}
 
-            <form method="post" novalidate>
+            <form method="post" novalidate data-loading-text="Logging in...">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -53,7 +56,10 @@
                     {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
                 </div>
 
-                <button class="btn btn-primary w-100" type="submit">Login</button>
+                <button class="btn btn-primary w-100" type="submit" data-loading-text="Logging in...">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Login
+                </button>
             </form>
 
             <p class="auth-switch">

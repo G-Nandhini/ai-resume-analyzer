@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error | ResumeIQ{% endblock %}
+
+{% block body %}
+<main class="error-shell">
+    <section class="error-card">
+        <div class="brand-mark mx-auto mb-3">
+            <i class="bi bi-tools"></i>
+        </div>
+        <p class="section-kicker">500 error</p>
+        <h1>Something went wrong</h1>
+        <p>ResumeIQ hit an unexpected issue. Please try again in a moment.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="btn btn-primary" href="{% url 'home' %}">
+                <i class="bi bi-house"></i>
+                Go Home
+            </a>
+            <a class="btn btn-outline-secondary" href="{% url 'login' %}">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Login
+            </a>
+        </div>
+    </section>
+</main>
+{% endblock %}

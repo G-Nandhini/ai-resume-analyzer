@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import never_cache
 
 from apps.analysis.models import JDMatchResult
 from apps.jobs.models import JobDescription
@@ -15,6 +16,7 @@ from apps.resumes.models import Resume
 from .forms import LoginForm, RegisterForm
 
 
+@never_cache
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -28,6 +30,7 @@ def register_view(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 
+@never_cache
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
